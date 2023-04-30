@@ -79,9 +79,9 @@ func (l *List[T]) InsertBack(v T) bool {
 	return l.InsertAt(v, l.size)
 }
 
-// DeleteAt removes a node at position n, with zero-based indexing.
+// Remove removes a node at position n, with zero-based indexing.
 // n must be between 0 and l.size - 1, inclusive.
-func (l *List[T]) DeleteAt(n int) (T, bool) {
+func (l *List[T]) Remove(n int) (T, bool) {
 	var value T
 
 	if l.size == 0 || n >= l.size || n < 0 {
@@ -121,12 +121,12 @@ func (l *List[T]) DeleteAt(n int) (T, bool) {
 	return value, true
 }
 
-func (l *List[T]) DeleteFront() (T, bool) {
-	return l.DeleteAt(0)
+func (l *List[T]) RemoveFront() (T, bool) {
+	return l.Remove(0)
 }
 
-func (l *List[T]) DeleteBack() (T, bool) {
-	return l.DeleteAt(l.size - 1)
+func (l *List[T]) RemoveBack() (T, bool) {
+	return l.Remove(l.size - 1)
 }
 
 func (l *List[T]) ConcatUnsafe(ls ...*List[T]) {
