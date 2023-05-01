@@ -28,6 +28,10 @@ func (l *List[T]) Size() int {
 	return l.size
 }
 
+func (l *List[T]) Empty() bool {
+	return l.size == 0 && l.head == nil && l.tail == nil
+}
+
 // Values returns a slice of the values carried by all the nodes within the List, in the same sequence
 func (l *List[T]) Values() []T {
 	vs := make([]T, l.size)
@@ -78,7 +82,7 @@ func (l *List[T]) Add(vs ...T) {
 // InsertAt inserts new nodes with vs as values starting at position i, with zero-based indexing.
 // Returns a boolean value determining whether there were any values inserted
 func (l *List[T]) InsertAt(i int, vs ...T) bool {
-	if l.withinRange(i) {
+	if !l.withinRange(i) || len(vs) == 0 {
 		return false
 	}
 
@@ -146,7 +150,7 @@ func (l *List[T]) Remove(i int) (T, bool) {
 
 	var value T
 
-	if l.size == 0 || !l.withinRange(i) {
+	if l.size == 0 || i < 0 || i >= l.size {
 		return value, false
 	}
 
@@ -161,7 +165,7 @@ func (l *List[T]) Remove(i int) (T, bool) {
 		}
 	default:
 		var prev *node[T]
-		for curr, pos := l.head, 0; pos <= i; curr, pos = curr.next, pos+1 {
+		for curr, pos := l.head, 0; curr != nil && pos <= i; curr, pos = curr.next, pos+1 {
 			if pos == i {
 				value = curr.value
 				prev.next = curr.next
@@ -199,28 +203,7 @@ func (l *List[T]) Concat(ls ...*List[T]) {
 	}
 }
 
-// ConcatUnsafe connects the existing head and tail nodes of the variadic input Lists
-// onto the end of a base List pointer receiver. As a result, any changes made to any of the
-// argument lists will affect the base List.
-func (l *List[T]) ConcatUnsafe(ls ...*List[T]) {
-	if len(ls) == 0 {
-		return
-	}
-
-	for _, list := range ls {
-		if l.size == 0 {
-			l.size = list.size
-			l.head = list.head
-			l.tail = list.tail
-		} else if list.size != 0 {
-			l.tail.next = list.head
-			l.tail = list.tail
-			l.size += list.size
-		}
-	}
-}
-
 // withinRange returns true if the index argument is within the bounds of the list
 func (l *List[T]) withinRange(i int) bool {
-	return i >= 0 && i < l.size
+	return i >= 0 && i <= l.size
 }
