@@ -89,7 +89,6 @@ func TestSort(t *testing.T) {
 			helpers.AssertEqual(t, got, tc.want)
 		})
 	}
-
 }
 
 func TestAdd(t *testing.T) {
@@ -281,6 +280,45 @@ func TestRemove(t *testing.T) {
 			helpers.AssertEqual(t, ok, tc.want.ok)
 			helpers.AssertEqual(t, arbitrary.String(), tc.want.list)
 		})
+	}
+}
+
+func TestSet(t *testing.T) {
+
+	empty := []int{}
+
+	t.Run("any input on empty list", func(t *testing.T) {
+		list := New(empty...)
+		want := helpers.ToString(empty)
+
+		list.Set(0, 0)
+		got := list.String()
+		helpers.AssertEqual(t, got, want)
+
+		list.Set(1, 0)
+		got = list.String()
+		helpers.AssertEqual(t, got, want)
+	})
+
+	arbitrary := []int{1, 2, 3}
+
+	testCases := []struct {
+		index int
+		value int
+		want  string
+	}{
+		{0, 0, helpers.ToString([]int{0, 2, 3})},
+		{1, 0, helpers.ToString([]int{1, 0, 3})},
+		{2, 0, helpers.ToString([]int{1, 2, 0})},
+		{3, 0, helpers.ToString([]int{1, 2, 3})},
+	}
+
+	for _, tc := range testCases {
+		list := New(arbitrary...)
+		list.Set(tc.index, tc.value)
+		got := list.String()
+		want := tc.want
+		helpers.AssertEqual(t, got, want)
 	}
 }
 

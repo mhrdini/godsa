@@ -223,6 +223,30 @@ func (l *List[T]) RemoveBack() (T, bool) {
 	return l.Remove(l.size - 1)
 }
 
+func (l *List[T]) Set(i int, v T) bool {
+	if !l.withinRange(i) {
+		return false
+	}
+
+	switch l.size {
+	case 0, i:
+		return false
+	default:
+		var curr *node[T]
+		if i <= l.size/2 {
+			curr = l.head
+			for pos := 0; pos < i; curr, pos = curr.next, pos+1 {
+			}
+		} else {
+			curr = l.tail
+			for pos := l.size - 1; pos > i; curr, pos = curr.prev, pos-1 {
+			}
+		}
+		curr.value = v
+		return true
+	}
+}
+
 // Concat uses Add to create new nodes out of a variadic input of Lists and inserts each one into
 // the List pointer receiver.
 func (l *List[T]) Concat(ls ...*List[T]) {
