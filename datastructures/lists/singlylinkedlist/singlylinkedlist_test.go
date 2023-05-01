@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/mhrdini/godsa/datastructures/utils"
 	"github.com/mhrdini/godsa/helpers"
 )
 
@@ -12,15 +13,83 @@ func TestNew(t *testing.T) {
 		empty := []int{}
 		got := New(empty...).Empty()
 		want := true
-		assertEqual(t, got, want)
+		helpers.AssertEqual(t, got, want)
 	})
 
 	t.Run("arbitrary list", func(t *testing.T) {
 		list := []int{1, 2, 3}
 		got := New(list...).String()
 		want := fmt.Sprint(list)
-		assertEqual(t, got, want)
+		helpers.AssertEqual(t, got, want)
 	})
+}
+
+func TestSort(t *testing.T) {
+
+	orderedConstraintIntList := []int{90, 3, 29}
+	orderedConstraintStringList := []string{"z", "aba", "xy"}
+
+	t.Run("using OrderedComparator for int list", func(t *testing.T) {
+		list := New(orderedConstraintIntList...)
+		list.Sort(utils.OrderedComparator[int])
+		got := list.String()
+		want := helpers.ToString([]int{3, 29, 90})
+		helpers.AssertEqual(t, got, want)
+	})
+
+	t.Run("using OrderedComparator for string list", func(t *testing.T) {
+		list := New(orderedConstraintStringList...)
+		list.Sort(utils.OrderedComparator[string])
+		got := list.String()
+		want := helpers.ToString([]string{"aba", "xy", "z"})
+		helpers.AssertEqual(t, got, want)
+	})
+
+	type rating struct {
+		criticValue   float64
+		audienceValue float64
+	}
+
+	type movie struct {
+		title string
+		score rating
+	}
+
+	byTitle := func(a, b movie) int {
+		return utils.OrderedComparator(a.title, b.title)
+	}
+	byCriticScore := func(a, b movie) int {
+		return utils.OrderedComparator(a.score.criticValue, b.score.criticValue)
+	}
+	byAudienceScore := func(a, b movie) int {
+		return utils.OrderedComparator(a.score.audienceValue, b.score.audienceValue)
+	}
+
+	movie1 := movie{"Aftersun", rating{0.90, 0.86}}
+	movie2 := movie{"Parasite", rating{0.85, 0.90}}
+	movie3 := movie{"John Wick: Chapter 4", rating{0.82, 0.95}}
+
+	list := []movie{movie1, movie2, movie3}
+
+	testCases := []struct {
+		name string
+		comp func(a, b movie) int
+		want string
+	}{
+		{"by title", byTitle, helpers.ToString([]movie{movie1, movie3, movie2})},
+		{"by critic score", byCriticScore, helpers.ToString([]movie{movie3, movie2, movie1})},
+		{"by audience score", byAudienceScore, helpers.ToString([]movie{movie1, movie2, movie3})},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			list := New(list...)
+			list.Sort(tc.comp)
+			got := list.String()
+			helpers.AssertEqual(t, got, tc.want)
+		})
+	}
+
 }
 
 func TestAdd(t *testing.T) {
@@ -41,13 +110,13 @@ func TestAdd(t *testing.T) {
 		t.Run(fmt.Sprintf("%v onto empty list %v", tc.values, empty), func(t *testing.T) {
 			list := New(empty...)
 			list.Add(tc.values...)
-			assertEqual(t, list.Size(), tc.wantOnEmpty)
+			helpers.AssertEqual(t, list.Size(), tc.wantOnEmpty)
 		})
 
 		t.Run(fmt.Sprintf("%v onto arbitrary list %v", tc.values, arbitrary), func(t *testing.T) {
 			list := New(arbitrary...)
 			list.Add(tc.values...)
-			assertEqual(t, list.Size(), tc.wantOnArbitrary)
+			helpers.AssertEqual(t, list.Size(), tc.wantOnArbitrary)
 		})
 	}
 }
@@ -85,92 +154,92 @@ func TestInsertAt(t *testing.T) {
 		{
 			emptyTest,
 			wants{
-				onStartPosition:  toString(emptyBase.list),
-				onMiddlePosition: toString(emptyBase.list),
-				onEndPosition:    toString(emptyBase.list),
-				onErrorPosition:  toString(emptyBase.list),
+				onStartPosition:  helpers.ToString(emptyBase.list),
+				onMiddlePosition: helpers.ToString(emptyBase.list),
+				onEndPosition:    helpers.ToString(emptyBase.list),
+				onErrorPosition:  helpers.ToString(emptyBase.list),
 			},
 			wants{
-				onStartPosition:  toString(arbitraryBase.list),
-				onMiddlePosition: toString(arbitraryBase.list),
-				onEndPosition:    toString(arbitraryBase.list),
-				onErrorPosition:  toString(arbitraryBase.list),
+				onStartPosition:  helpers.ToString(arbitraryBase.list),
+				onMiddlePosition: helpers.ToString(arbitraryBase.list),
+				onEndPosition:    helpers.ToString(arbitraryBase.list),
+				onErrorPosition:  helpers.ToString(arbitraryBase.list),
 			},
 		},
 		{
 			arbitraryTest,
 			wants{
-				onStartPosition:  toString(arbitraryTest),
-				onMiddlePosition: toString(arbitraryTest),
-				onEndPosition:    toString(arbitraryTest),
-				onErrorPosition:  toString(emptyBase.list),
+				onStartPosition:  helpers.ToString(arbitraryTest),
+				onMiddlePosition: helpers.ToString(arbitraryTest),
+				onEndPosition:    helpers.ToString(arbitraryTest),
+				onErrorPosition:  helpers.ToString(emptyBase.list),
 			},
 			wants{
-				onStartPosition:  toString([]int{4, 5, 6, 1, 2, 3}),
-				onMiddlePosition: toString([]int{1, 4, 5, 6, 2, 3}),
-				onEndPosition:    toString([]int{1, 2, 3, 4, 5, 6}),
-				onErrorPosition:  toString([]int{1, 2, 3}),
+				onStartPosition:  helpers.ToString([]int{4, 5, 6, 1, 2, 3}),
+				onMiddlePosition: helpers.ToString([]int{1, 4, 5, 6, 2, 3}),
+				onEndPosition:    helpers.ToString([]int{1, 2, 3, 4, 5, 6}),
+				onErrorPosition:  helpers.ToString([]int{1, 2, 3}),
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		// for empty base list
-		t.Run(fmt.Sprintf("%v into start position (%d) of empty list %v", toString(tc.list), emptyBase.startPosition, toString(emptyBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into start position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.startPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
 			base := New(emptyBase.list...)
 			base.InsertAt(emptyBase.startPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onEmpty.onStartPosition)
+			helpers.AssertEqual(t, got, tc.onEmpty.onStartPosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into middle position (%d) of empty list %v", toString(tc.list), emptyBase.middlePosition, toString(emptyBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into middle position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.middlePosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
 			base := New(emptyBase.list...)
 			base.InsertAt(emptyBase.middlePosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onEmpty.onMiddlePosition)
+			helpers.AssertEqual(t, got, tc.onEmpty.onMiddlePosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into end position (%d) of empty list %v", toString(tc.list), emptyBase.endPosition, toString(emptyBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into end position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.endPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
 			base := New(emptyBase.list...)
 			base.InsertAt(emptyBase.endPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onEmpty.onEndPosition)
+			helpers.AssertEqual(t, got, tc.onEmpty.onEndPosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into error position (%d) of empty list %v", toString(tc.list), emptyBase.errorPosition, toString(emptyBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into error position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.errorPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
 			base := New(emptyBase.list...)
 			base.InsertAt(emptyBase.errorPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onEmpty.onErrorPosition)
+			helpers.AssertEqual(t, got, tc.onEmpty.onErrorPosition)
 		})
 
 		// for arbitrary base list
-		t.Run(fmt.Sprintf("%v into start position (%d) of arbitrary list %v", toString(tc.list), arbitraryBase.startPosition, toString(arbitraryBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into start position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.startPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
 			base := New(arbitraryBase.list...)
 			base.InsertAt(arbitraryBase.startPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onArbitrary.onStartPosition)
+			helpers.AssertEqual(t, got, tc.onArbitrary.onStartPosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into middle position (%d) of arbitrary list %v", toString(tc.list), arbitraryBase.middlePosition, toString(arbitraryBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into middle position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.middlePosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
 			base := New(arbitraryBase.list...)
 			base.InsertAt(arbitraryBase.middlePosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onArbitrary.onMiddlePosition)
+			helpers.AssertEqual(t, got, tc.onArbitrary.onMiddlePosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into end position (%d) of arbitrary list %v", toString(tc.list), arbitraryBase.endPosition, toString(arbitraryBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into end position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.endPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
 			base := New(arbitraryBase.list...)
 			base.InsertAt(arbitraryBase.endPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onArbitrary.onEndPosition)
+			helpers.AssertEqual(t, got, tc.onArbitrary.onEndPosition)
 		})
 
-		t.Run(fmt.Sprintf("%v into error position (%d) of arbitrary list %v", toString(tc.list), arbitraryBase.errorPosition, toString(arbitraryBase.list)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v into error position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.errorPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
 			base := New(arbitraryBase.list...)
 			base.InsertAt(arbitraryBase.errorPosition, tc.list...)
 			got := base.String()
-			assertEqual(t, got, tc.onArbitrary.onErrorPosition)
+			helpers.AssertEqual(t, got, tc.onArbitrary.onErrorPosition)
 		})
 	}
 }
@@ -185,30 +254,32 @@ func TestRemove(t *testing.T) {
 		_, ok := empty.Remove(0)
 		got := ok
 		want := false
-		assertEqual(t, got, want)
+		helpers.AssertEqual(t, got, want)
 	})
 
 	type result struct {
 		value int
 		ok    bool
+		list  string
 	}
 
 	testCases := []struct {
 		index int
 		want  result
 	}{
-		{0, result{arbitrary[0], true}},
-		{1, result{arbitrary[1], true}},
-		{2, result{arbitrary[2], true}},
-		{3, result{0, false}},
+		{0, result{arbitrary[0], true, helpers.ToString([]int{2, 3})}},
+		{1, result{arbitrary[1], true, helpers.ToString([]int{1, 3})}},
+		{2, result{arbitrary[2], true, helpers.ToString([]int{1, 2})}},
+		{3, result{0, false, helpers.ToString([]int{1, 2, 3})}},
 	}
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("index %d on arbitrary list %v", tc.index, arbitrary), func(t *testing.T) {
 			arbitrary := New(arbitrary...)
 			value, ok := arbitrary.Remove(tc.index)
-			assertEqual(t, value, tc.want.value)
-			assertEqual(t, ok, tc.want.ok)
+			helpers.AssertEqual(t, value, tc.want.value)
+			helpers.AssertEqual(t, ok, tc.want.ok)
+			helpers.AssertEqual(t, arbitrary.String(), tc.want.list)
 		})
 	}
 }
@@ -226,36 +297,23 @@ func TestConcat(t *testing.T) {
 		onEmpty     string
 		onArbitrary string
 	}{
-		{[][]int{}, toString(emptyBase), toString(arbitraryBase)},
-		{[][]int{emptyList, arbitraryList}, toString(arbitraryList), toString(append(arbitraryBase, arbitraryList...))},
+		{[][]int{}, helpers.ToString(emptyBase), helpers.ToString(arbitraryBase)},
+		{[][]int{emptyList, arbitraryList}, helpers.ToString(arbitraryList), helpers.ToString(append(arbitraryBase, arbitraryList...))},
 	}
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v on empty list %v", tc.input, emptyBase), func(t *testing.T) {
 			list := New(emptyBase...)
-			input := helpers.Apply(tc.input, func(l []int) *List[int] { return New(l...) })
+			input := helpers.Map(tc.input, func(l []int) *List[int] { return New(l...) })
 			list.Concat(input...)
-			assertEqual(t, toString(list), tc.onEmpty)
+			helpers.AssertEqual(t, helpers.ToString(list), tc.onEmpty)
 		})
 
 		t.Run(fmt.Sprintf("%v on arbitrary list %v", tc.input, arbitraryBase), func(t *testing.T) {
 			list := New(arbitraryBase...)
-			input := helpers.Apply(tc.input, func(l []int) *List[int] { return New(l...) })
+			input := helpers.Map(tc.input, func(l []int) *List[int] { return New(l...) })
 			list.Concat(input...)
-			assertEqual(t, toString(list), tc.onArbitrary)
+			helpers.AssertEqual(t, helpers.ToString(list), tc.onArbitrary)
 		})
 	}
-}
-
-/* -------------------------------------------------------------------------- */
-
-func assertEqual[T comparable](t testing.TB, got, want T) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got %v want %v", got, want)
-	}
-}
-
-func toString[T any](values T) string {
-	return fmt.Sprintf("%v", values)
 }

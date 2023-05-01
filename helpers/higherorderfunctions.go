@@ -10,7 +10,7 @@ func Filter[T any](vs []T, f func(T) bool) []T {
 	return res
 }
 
-func Apply[T, U any](vs []T, f func(T) U) []U {
+func Map[T, U any](vs []T, f func(T) U) []U {
 	res := []U{}
 	for _, v := range vs {
 		res = append(res, f(v))

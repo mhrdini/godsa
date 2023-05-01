@@ -16,23 +16,26 @@ type node[T any] struct {
 	next  *node[T]
 }
 
-// New receives a variadic input of values whose type are T and returns a *List of nodes whose values are vs
+// New receives a variadic input of values whose type are T.
+// Returns a *List of nodes whose values are vs.
 func New[T any](vs ...T) *List[T] {
 	list := &List[T]{}
 	list.Add(vs...)
 	return list
 }
 
-// Size returns the number of nodes inside the List
+// Size returns the number of nodes inside the List.
 func (l *List[T]) Size() int {
 	return l.size
 }
 
+// Empty checks if the List has no nodes.
 func (l *List[T]) Empty() bool {
 	return l.size == 0 && l.head == nil && l.tail == nil
 }
 
-// Values returns a slice of the values carried by all the nodes within the List, in the same sequence
+// Values returns a slice of the values carried by all the nodes within the List,
+// in the same sequence.
 func (l *List[T]) Values() []T {
 	vs := make([]T, l.size)
 	for i, n := 0, l.head; n != nil; i, n = i+1, n.next {
@@ -41,14 +44,14 @@ func (l *List[T]) Values() []T {
 	return vs[:l.size:l.size]
 }
 
-// Reset clears the size, and head and tail nodes of the List (but the List itself is not nil)
+// Reset clears the size, and head and tail nodes of the List (but the List itself is not nil).
 func (l *List[T]) Reset() {
 	l.size = 0
 	l.head = nil
 	l.tail = nil
 }
 
-// Sort receives a utils.Comparator function used to sort the values in-place
+// Sort receives a utils.Comparator function used to sort the values in-place.
 func (l *List[T]) Sort(comp utils.Comparator[T]) {
 	vs := l.Values()
 	utils.Sort(vs, comp)
@@ -56,13 +59,17 @@ func (l *List[T]) Sort(comp utils.Comparator[T]) {
 	l.Add(vs...)
 }
 
-// String returns a slice representation of the List
+// String returns a slice representation of the List.
 func (l *List[T]) String() string {
 	return fmt.Sprintf("%v", l.Values())
 }
 
-// Add creates and inserts a new node at the tail end of the List, for every T value received as input
-func (l *List[T]) Add(vs ...T) {
+// Add creates and inserts a new node at the tail end of the List, for every T value received as input.
+func (l *List[T]) Add(vs ...T) bool {
+	if len(vs) == 0 {
+		return false
+	}
+
 	for _, v := range vs {
 		newNode := &node[T]{
 			value: v,
@@ -77,18 +84,19 @@ func (l *List[T]) Add(vs ...T) {
 		}
 		l.size++
 	}
+
+	return true
 }
 
 // InsertAt inserts new nodes with vs as values starting at position i, with zero-based indexing.
-// Returns a boolean value determining whether there were any values inserted
+// Returns a boolean value determining whether there were any values inserted.
 func (l *List[T]) InsertAt(i int, vs ...T) bool {
 	if !l.withinRange(i) || len(vs) == 0 {
 		return false
 	}
 
 	if i == l.size {
-		l.Add(vs...)
-		return true
+		return l.Add(vs...)
 	}
 
 	var start, end, prev *node[T]
@@ -133,19 +141,22 @@ func (l *List[T]) InsertAt(i int, vs ...T) bool {
 	return true
 }
 
-// Prepend inserts new nodes with vs as values at the start of the List
-func (l *List[T]) Prepend(vs ...T) {
-	l.InsertAt(0, vs...)
+// Prepend inserts new nodes with vs as values at the start of the List.
+// Returns a boolean value determining whether there were any values inserted.
+func (l *List[T]) Prepend(vs ...T) bool {
+	return l.InsertAt(0, vs...)
 }
 
-// Append inserts new nodes with vs as values at the end of the List, an alias for Add
-func (l *List[T]) Append(vs ...T) {
-	l.Add(vs...)
+// Append inserts new nodes with vs as values at the end of the List, an alias for Add.
+// Returns a boolean value determining whether there were any values inserted.
+func (l *List[T]) Append(vs ...T) bool {
+	return l.Add(vs...)
 }
 
 // Remove removes a node at position n, with zero-based indexing.
-// n must be between 0 and l.size - 1, inclusive. Returns the removed value (if there is any), and
-// a boolean value determining whether a value was removed or not.
+// n must be between 0 and l.size - 1, inclusive.
+// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// was removed or not.
 func (l *List[T]) Remove(i int) (T, bool) {
 
 	var value T
@@ -181,18 +192,22 @@ func (l *List[T]) Remove(i int) (T, bool) {
 	return value, true
 }
 
-// RemoveFront removes a node at the head position, using the Remove function
+// RemoveFront removes a node at the head position, using the Remove function.
+// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// was removed or not.
 func (l *List[T]) RemoveFront() (T, bool) {
 	return l.Remove(0)
 }
 
-// RemoveFront removes a node at the tail position, using the Remove function
+// RemoveBack removes a node at the tail position, using the Remove function.
+// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// was removed or not.
 func (l *List[T]) RemoveBack() (T, bool) {
 	return l.Remove(l.size - 1)
 }
 
 // Concat uses Add to create new nodes out of a variadic input of Lists and inserts each one into
-// the List pointer receiver
+// the List pointer receiver.
 func (l *List[T]) Concat(ls ...*List[T]) {
 	if len(ls) == 0 {
 		return
@@ -203,7 +218,7 @@ func (l *List[T]) Concat(ls ...*List[T]) {
 	}
 }
 
-// withinRange returns true if the index argument is within the bounds of the list
+// withinRange returns true if the index argument is within the bounds of the list.
 func (l *List[T]) withinRange(i int) bool {
 	return i >= 0 && i <= l.size
 }
