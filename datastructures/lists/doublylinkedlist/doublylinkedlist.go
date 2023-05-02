@@ -78,7 +78,7 @@ func (l *List[T]) Add(vs ...T) bool {
 			prev:  nil,
 			next:  nil,
 		}
-		if l.size == 0 {
+		if l.Empty() {
 			l.head = newNode
 			l.tail = newNode
 		} else {
@@ -172,7 +172,7 @@ func (l *List[T]) Append(v ...T) bool {
 func (l *List[T]) Remove(i int) (T, bool) {
 	var value T
 
-	if l.size == 0 || i < 0 || i >= l.size {
+	if l.Empty() || i < 0 || i >= l.size {
 		return value, false
 	}
 
@@ -223,6 +223,40 @@ func (l *List[T]) RemoveBack() (T, bool) {
 	return l.Remove(l.size - 1)
 }
 
+// Get attempts to retrieve the value contained by the node at position i.
+// Returns the retrieved value (if any), and a boolean value determining whether a value was
+// retrieved or not.
+func (l *List[T]) Get(i int) (T, bool) {
+	var value T
+
+	if l.Empty() || !l.withinRange(i) {
+		return value, false
+	}
+
+	switch i {
+	case 0:
+		return l.head.value, true
+	case l.size - 1:
+		return l.tail.value, true
+	case l.size:
+		return value, false
+	default:
+		var curr *node[T]
+		if i <= l.size/2 {
+			curr = l.head
+			for pos := 0; pos < i; curr, pos = curr.next, pos+1 {
+			}
+		} else {
+			curr = l.tail
+			for pos := l.size - 1; pos > i; curr, pos = curr.prev, pos-1 {
+			}
+		}
+		return curr.value, true
+	}
+}
+
+// Set updates an existing node at position i to hold the value v.
+// Returns a boolean value determining whether a node was updated or not.
 func (l *List[T]) Set(i int, v T) bool {
 	if !l.withinRange(i) {
 		return false

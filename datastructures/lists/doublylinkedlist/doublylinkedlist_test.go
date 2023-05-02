@@ -122,8 +122,25 @@ func TestAdd(t *testing.T) {
 
 func TestInsertAt(t *testing.T) {
 
-	list := []int{1, 2, 3, 4, 5}
 	inserted := []int{0, 0, 0}
+
+	t.Run("zero index on empty list", func(t *testing.T) {
+		list := New[int]()
+
+		got := list.InsertAt(0, inserted...)
+		want := true
+		helpers.AssertEqual(t, got, want)
+	})
+
+	t.Run("non-zero on empty list", func(t *testing.T) {
+		list := New[int]()
+
+		got := list.InsertAt(1, inserted...)
+		want := false
+		helpers.AssertEqual(t, got, want)
+	})
+
+	arbitrary := []int{1, 2, 3, 4, 5}
 
 	testCases := []struct {
 		index int
@@ -136,11 +153,13 @@ func TestInsertAt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		list := New(list...)
-		list.InsertAt(tc.index, inserted...)
-		got := list.String()
-		want := tc.want
-		helpers.AssertEqual(t, got, want)
+		t.Run(fmt.Sprintf("%v into index %d of arbitrary list %v", inserted, tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			list.InsertAt(tc.index, inserted...)
+			got := list.String()
+			want := tc.want
+			helpers.AssertEqual(t, got, want)
+		})
 	}
 }
 
@@ -184,6 +203,50 @@ func TestRemove(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	empty := []int{}
+
+	t.Run("any input on empty list", func(t *testing.T) {
+
+		list := New(empty...)
+		want := false
+
+		_, ok := list.Get(0)
+		helpers.AssertEqual(t, ok, want)
+
+		_, ok = list.Get(1)
+		helpers.AssertEqual(t, ok, want)
+	})
+
+	arbitrary := []int{1, 2, 3}
+
+	type result struct {
+		value int
+		ok    bool
+	}
+
+	var zeroValue int
+
+	testCases := []struct {
+		index int
+		want  result
+	}{
+		{0, result{arbitrary[0], true}},
+		{1, result{arbitrary[1], true}},
+		{2, result{arbitrary[2], true}},
+		{3, result{zeroValue, false}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("index %d on arbitrary list %v", tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			value, ok := list.Get(tc.index)
+			helpers.AssertEqual(t, value, tc.want.value)
+			helpers.AssertEqual(t, ok, tc.want.ok)
+		})
+	}
+}
+
 func TestSet(t *testing.T) {
 
 	empty := []int{}
@@ -215,11 +278,13 @@ func TestSet(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		list := New(arbitrary...)
-		list.Set(tc.index, tc.value)
-		got := list.String()
-		want := tc.want
-		helpers.AssertEqual(t, got, want)
+		t.Run(fmt.Sprintf("%d into index %d in arbitrary list %v", tc.value, tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			list.Set(tc.index, tc.value)
+			got := list.String()
+			want := tc.want
+			helpers.AssertEqual(t, got, want)
+		})
 	}
 }
 

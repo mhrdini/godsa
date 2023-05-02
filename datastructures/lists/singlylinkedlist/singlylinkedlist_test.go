@@ -121,128 +121,47 @@ func TestAdd(t *testing.T) {
 }
 
 func TestInsertAt(t *testing.T) {
-	baseLists := []struct {
-		list           []int
-		startPosition  int
-		middlePosition int
-		endPosition    int
-		errorPosition  int
-	}{
-		{[]int{}, 0, 0, 0, 1},
-		{[]int{1, 2, 3}, 0, 1, 3, 4},
-	}
 
-	emptyBase := baseLists[0]
-	arbitraryBase := baseLists[1]
+	inserted := []int{0, 0, 0}
 
-	emptyTest := []int{}
-	arbitraryTest := []int{4, 5, 6}
+	t.Run("zero index on empty list", func(t *testing.T) {
+		list := New[int]()
 
-	type wants struct {
-		onStartPosition  string
-		onMiddlePosition string
-		onEndPosition    string
-		onErrorPosition  string
-	}
+		got := list.InsertAt(0, inserted...)
+		want := true
+		helpers.AssertEqual(t, got, want)
+	})
+
+	t.Run("non-zero on empty list", func(t *testing.T) {
+		list := New[int]()
+
+		got := list.InsertAt(1, inserted...)
+		want := false
+		helpers.AssertEqual(t, got, want)
+	})
+
+	arbitrary := []int{1, 2, 3, 4, 5}
 
 	testCases := []struct {
-		list        []int
-		onEmpty     wants
-		onArbitrary wants
+		index int
+		want  string
 	}{
-		{
-			emptyTest,
-			wants{
-				onStartPosition:  helpers.ToString(emptyBase.list),
-				onMiddlePosition: helpers.ToString(emptyBase.list),
-				onEndPosition:    helpers.ToString(emptyBase.list),
-				onErrorPosition:  helpers.ToString(emptyBase.list),
-			},
-			wants{
-				onStartPosition:  helpers.ToString(arbitraryBase.list),
-				onMiddlePosition: helpers.ToString(arbitraryBase.list),
-				onEndPosition:    helpers.ToString(arbitraryBase.list),
-				onErrorPosition:  helpers.ToString(arbitraryBase.list),
-			},
-		},
-		{
-			arbitraryTest,
-			wants{
-				onStartPosition:  helpers.ToString(arbitraryTest),
-				onMiddlePosition: helpers.ToString(arbitraryTest),
-				onEndPosition:    helpers.ToString(arbitraryTest),
-				onErrorPosition:  helpers.ToString(emptyBase.list),
-			},
-			wants{
-				onStartPosition:  helpers.ToString([]int{4, 5, 6, 1, 2, 3}),
-				onMiddlePosition: helpers.ToString([]int{1, 4, 5, 6, 2, 3}),
-				onEndPosition:    helpers.ToString([]int{1, 2, 3, 4, 5, 6}),
-				onErrorPosition:  helpers.ToString([]int{1, 2, 3}),
-			},
-		},
+		{0, helpers.ToString([]int{0, 0, 0, 1, 2, 3, 4, 5})},
+		{1, helpers.ToString([]int{1, 0, 0, 0, 2, 3, 4, 5})},
+		{4, helpers.ToString([]int{1, 2, 3, 4, 0, 0, 0, 5})},
+		{5, helpers.ToString([]int{1, 2, 3, 4, 5, 0, 0, 0})},
 	}
 
 	for _, tc := range testCases {
-		// for empty base list
-		t.Run(fmt.Sprintf("%v into start position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.startPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
-			base := New(emptyBase.list...)
-			base.InsertAt(emptyBase.startPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onEmpty.onStartPosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into middle position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.middlePosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
-			base := New(emptyBase.list...)
-			base.InsertAt(emptyBase.middlePosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onEmpty.onMiddlePosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into end position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.endPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
-			base := New(emptyBase.list...)
-			base.InsertAt(emptyBase.endPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onEmpty.onEndPosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into error position (%d) of empty list %v", helpers.ToString(tc.list), emptyBase.errorPosition, helpers.ToString(emptyBase.list)), func(t *testing.T) {
-			base := New(emptyBase.list...)
-			base.InsertAt(emptyBase.errorPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onEmpty.onErrorPosition)
-		})
-
-		// for arbitrary base list
-		t.Run(fmt.Sprintf("%v into start position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.startPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
-			base := New(arbitraryBase.list...)
-			base.InsertAt(arbitraryBase.startPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onArbitrary.onStartPosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into middle position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.middlePosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
-			base := New(arbitraryBase.list...)
-			base.InsertAt(arbitraryBase.middlePosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onArbitrary.onMiddlePosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into end position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.endPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
-			base := New(arbitraryBase.list...)
-			base.InsertAt(arbitraryBase.endPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onArbitrary.onEndPosition)
-		})
-
-		t.Run(fmt.Sprintf("%v into error position (%d) of arbitrary list %v", helpers.ToString(tc.list), arbitraryBase.errorPosition, helpers.ToString(arbitraryBase.list)), func(t *testing.T) {
-			base := New(arbitraryBase.list...)
-			base.InsertAt(arbitraryBase.errorPosition, tc.list...)
-			got := base.String()
-			helpers.AssertEqual(t, got, tc.onArbitrary.onErrorPosition)
+		t.Run(fmt.Sprintf("%v into index %d of arbitrary list %v", inserted, tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			list.InsertAt(tc.index, inserted...)
+			got := list.String()
+			want := tc.want
+			helpers.AssertEqual(t, got, want)
 		})
 	}
 }
-
 func TestRemove(t *testing.T) {
 
 	empty := []int{}
@@ -283,6 +202,50 @@ func TestRemove(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	empty := []int{}
+
+	t.Run("any input on empty list", func(t *testing.T) {
+
+		list := New(empty...)
+		want := false
+
+		_, ok := list.Get(0)
+		helpers.AssertEqual(t, ok, want)
+
+		_, ok = list.Get(1)
+		helpers.AssertEqual(t, ok, want)
+	})
+
+	arbitrary := []int{1, 2, 3}
+
+	type result struct {
+		value int
+		ok    bool
+	}
+
+	var zeroValue int
+
+	testCases := []struct {
+		index int
+		want  result
+	}{
+		{0, result{arbitrary[0], true}},
+		{1, result{arbitrary[1], true}},
+		{2, result{arbitrary[2], true}},
+		{3, result{zeroValue, false}},
+	}
+
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("get index %d on arbitrary list %v", tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			value, ok := list.Get(tc.index)
+			helpers.AssertEqual(t, value, tc.want.value)
+			helpers.AssertEqual(t, ok, tc.want.ok)
+		})
+	}
+}
+
 func TestSet(t *testing.T) {
 
 	empty := []int{}
@@ -314,11 +277,13 @@ func TestSet(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		list := New(arbitrary...)
-		list.Set(tc.index, tc.value)
-		got := list.String()
-		want := tc.want
-		helpers.AssertEqual(t, got, want)
+		t.Run(fmt.Sprintf("%d into index %d in arbitrary list %v", tc.value, tc.index, arbitrary), func(t *testing.T) {
+			list := New(arbitrary...)
+			list.Set(tc.index, tc.value)
+			got := list.String()
+			want := tc.want
+			helpers.AssertEqual(t, got, want)
+		})
 	}
 }
 
