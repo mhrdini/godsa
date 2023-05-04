@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/mhrdini/godsa/datastructures/queues/arrayqueue"
 	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
 	"github.com/mhrdini/godsa/helpers"
 )
 
 func queues[T any](base ...T) []Queue[T] {
 	return []Queue[T]{
+		arrayqueue.New(base...),
 		linkedlistqueue.New(base...),
 	}
 }

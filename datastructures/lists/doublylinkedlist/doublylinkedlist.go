@@ -49,7 +49,7 @@ func (l *List[T]) Values() []T {
 	for i, n := 0, l.head; n != nil; i, n = i+1, n.next {
 		vs[i] = n.value
 	}
-	return vs[:l.size:l.size]
+	return vs
 }
 
 // String returns a string representation of the List.

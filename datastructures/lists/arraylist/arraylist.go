@@ -38,7 +38,9 @@ func (l *List[T]) Empty() bool {
 }
 
 func (l *List[T]) Values() []T {
-	return l.list[:l.size:l.size]
+	vs := make([]T, l.size)
+	copy(vs, l.list[:l.size])
+	return vs
 }
 
 func (l *List[T]) String() string {
