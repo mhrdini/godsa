@@ -3,6 +3,7 @@ package bst
 import (
 	"fmt"
 
+	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
 	"github.com/mhrdini/godsa/datastructures/utils"
 )
 
@@ -43,7 +44,7 @@ func (t *Tree[T]) Empty() bool {
 }
 
 func (t *Tree[T]) Values() []T {
-	return t.Traverse(Inorder[T])
+	return t.Traverse(InOrder[T])
 }
 
 func (t *Tree[T]) Traverse(walk traversal[T]) []T {
@@ -93,32 +94,47 @@ func (n *Node[T]) Insert(newNode *Node[T], compare utils.Comparator[T]) {
 		}
 	}
 }
-func Inorder[T any](n *Node[T], ch chan T) {
+func InOrder[T any](n *Node[T], ch chan T) {
 	if n.left != nil {
-		Inorder(n.left, ch)
+		InOrder(n.left, ch)
 	}
 	ch <- n.value
 	if n.right != nil {
-		Inorder(n.right, ch)
+		InOrder(n.right, ch)
 	}
 }
 
-func Preorder[T any](n *Node[T], ch chan T) {
+func PreOrder[T any](n *Node[T], ch chan T) {
 	ch <- n.value
 	if n.left != nil {
-		Preorder(n.left, ch)
+		PreOrder(n.left, ch)
 	}
 	if n.right != nil {
-		Preorder(n.right, ch)
+		PreOrder(n.right, ch)
 	}
 }
 
-func Postorder[T any](n *Node[T], ch chan T) {
+func PostOrder[T any](n *Node[T], ch chan T) {
 	if n.left != nil {
-		Postorder(n.left, ch)
+		PostOrder(n.left, ch)
 	}
 	if n.right != nil {
-		Postorder(n.right, ch)
+		PostOrder(n.right, ch)
 	}
 	ch <- n.value
+}
+
+func LevelOrder[T any](n *Node[T], ch chan T) {
+	queue := linkedlistqueue.New[*Node[T]]()
+	queue.Enqueue(n)
+	for !queue.Empty() {
+		v, _ := queue.Dequeue()
+		ch <- v.value
+		if v.left != nil {
+			queue.Enqueue(v.left)
+		}
+		if v.right != nil {
+			queue.Enqueue(v.right)
+		}
+	}
 }
