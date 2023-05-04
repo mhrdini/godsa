@@ -6,6 +6,7 @@ import (
 )
 
 type List[T any] interface {
+	containers.Container[T]
 	Reset()
 	Sort(comp utils.Comparator[T])
 	Add(vs ...T) bool
@@ -14,5 +15,4 @@ type List[T any] interface {
 	Get(i int) (T, bool)
 	Set(i int, v T) bool
 	// TODO: Concat(vs ...*List[T])
-	containers.Container[T]
 }

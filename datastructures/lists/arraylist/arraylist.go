@@ -6,6 +6,8 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils"
 )
 
+const arrayList = "ArrayList"
+
 type List[T any] struct {
 	size int
 	list []T
@@ -21,6 +23,10 @@ func New[T any](v ...T) *List[T] {
 		list.Add(v...)
 	}
 	return list
+}
+
+func (l *List[T]) Name() string {
+	return arrayList
 }
 
 func (l *List[T]) Size() int {

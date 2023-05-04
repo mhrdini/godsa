@@ -19,16 +19,10 @@ func lists[T any](base ...T) []List[T] {
 	}
 }
 
-var listNames = map[int]string{
-	0: "arraylist",
-	1: "singlylinkedlist",
-	2: "doublylinkedlist",
-}
-
 func TestReset(t *testing.T) {
 	arbitrary := []int{1, 2, 3}
-	for i, list := range lists(arbitrary...) {
-		t.Run(listNames[i], func(t *testing.T) {
+	for _, list := range lists(arbitrary...) {
+		t.Run(list.Name(), func(t *testing.T) {
 			list.Reset()
 			helpers.AssertEqual(t, list.Empty(), true)
 		})
@@ -40,8 +34,8 @@ func TestSort(t *testing.T) {
 	orderedConstraintIntList := []int{90, 3, 29}
 	orderedConstraintStringList := []string{"z", "aba", "xy"}
 
-	for i, list := range lists(orderedConstraintIntList...) {
-		t.Run(fmt.Sprintf("using OrderedComparator for int %v", listNames[i]), func(t *testing.T) {
+	for _, list := range lists(orderedConstraintIntList...) {
+		t.Run(fmt.Sprintf("using OrderedComparator for int %v", list.Name()), func(t *testing.T) {
 			list.Sort(utils.OrderedComparator[int])
 			got := list.String()
 			want := helpers.ToString([]int{3, 29, 90})
@@ -49,8 +43,8 @@ func TestSort(t *testing.T) {
 		})
 	}
 
-	for i, list := range lists(orderedConstraintStringList...) {
-		t.Run(fmt.Sprintf("using OrderedComparator for string %v", listNames[i]), func(t *testing.T) {
+	for _, list := range lists(orderedConstraintStringList...) {
+		t.Run(fmt.Sprintf("using OrderedComparator for string %v", list.Name()), func(t *testing.T) {
 			list.Sort(utils.OrderedComparator[string])
 			got := list.String()
 			want := helpers.ToString([]string{"aba", "xy", "z"})
@@ -95,8 +89,8 @@ func TestSort(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(movies...) {
-			t.Run(fmt.Sprintf("%v on %v", tc.name, listNames[i]), func(t *testing.T) {
+		for _, list := range lists(movies...) {
+			t.Run(fmt.Sprintf("%v on %v", tc.name, list.Name()), func(t *testing.T) {
 				list.Sort(tc.comp)
 				got := list.String()
 				helpers.AssertEqual(t, got, tc.want)
@@ -129,8 +123,8 @@ func TestAdd(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(tc.base...) {
-			t.Run(fmt.Sprintf("to %v %v <- %v", listNames[i], tc.base, tc.input), func(t *testing.T) {
+		for _, list := range lists(tc.base...) {
+			t.Run(fmt.Sprintf("to %v %v <- %v", list.Name(), tc.base, tc.input), func(t *testing.T) {
 				checkAddResult(t, list, tc.input, tc.want)
 			})
 		}
@@ -161,8 +155,8 @@ func TestInsertAt(t *testing.T) {
 	}
 
 	for _, tc := range emptyTestCases {
-		for i, list := range lists[int]() {
-			t.Run(fmt.Sprintf("to empty %v at index %d", listNames[i], tc.index), func(t *testing.T) {
+		for _, list := range lists[int]() {
+			t.Run(fmt.Sprintf("to empty %v at index %d", list.Name(), tc.index), func(t *testing.T) {
 				checkInserted(t, list, tc.index, tc.want)
 			})
 		}
@@ -181,8 +175,8 @@ func TestInsertAt(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(arbitrary...) {
-			t.Run(fmt.Sprintf("to %v %v <- %v at index %d", listNames[i], arbitrary, inserted, tc.index), func(t *testing.T) {
+		for _, list := range lists(arbitrary...) {
+			t.Run(fmt.Sprintf("to %v %v <- %v at index %d", list.Name(), arbitrary, inserted, tc.index), func(t *testing.T) {
 				checkInsertResult(t, list, tc.index, tc.want)
 			})
 		}
@@ -194,8 +188,8 @@ func TestRemove(t *testing.T) {
 	empty := []int{}
 	arbitrary := []int{1, 2, 3}
 
-	for i, list := range lists(empty...) {
-		t.Run(fmt.Sprintf("any index on empty %v", listNames[i]), func(t *testing.T) {
+	for _, list := range lists(empty...) {
+		t.Run(fmt.Sprintf("any index on empty %v", list.Name()), func(t *testing.T) {
 			_, ok := list.Remove(0)
 			got := ok
 			want := false
@@ -220,8 +214,8 @@ func TestRemove(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(arbitrary...) {
-			t.Run(fmt.Sprintf("index %d on arbitrary %v %v", tc.index, listNames[i], arbitrary), func(t *testing.T) {
+		for _, list := range lists(arbitrary...) {
+			t.Run(fmt.Sprintf("index %d on arbitrary %v %v", tc.index, list.Name(), arbitrary), func(t *testing.T) {
 				value, ok := list.Remove(tc.index)
 				helpers.AssertEqual(t, value, tc.want.value)
 				helpers.AssertEqual(t, ok, tc.want.ok)
@@ -234,8 +228,8 @@ func TestRemove(t *testing.T) {
 func TestGet(t *testing.T) {
 	empty := []int{}
 
-	for i, list := range lists(empty...) {
-		t.Run(fmt.Sprintf("any input on empty %v", listNames[i]), func(t *testing.T) {
+	for _, list := range lists(empty...) {
+		t.Run(fmt.Sprintf("any input on empty %v", list.Name()), func(t *testing.T) {
 			want := false
 			_, ok := list.Get(0)
 			helpers.AssertEqual(t, ok, want)
@@ -264,8 +258,8 @@ func TestGet(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(arbitrary...) {
-			t.Run(fmt.Sprintf("get index %d on arbitrary %v %v", tc.index, listNames[i], arbitrary), func(t *testing.T) {
+		for _, list := range lists(arbitrary...) {
+			t.Run(fmt.Sprintf("get index %d on arbitrary %v %v", tc.index, list.Name(), arbitrary), func(t *testing.T) {
 				value, ok := list.Get(tc.index)
 				helpers.AssertEqual(t, value, tc.want.value)
 				helpers.AssertEqual(t, ok, tc.want.ok)
@@ -278,8 +272,8 @@ func TestSet(t *testing.T) {
 
 	empty := []int{}
 
-	for i, list := range lists(empty...) {
-		t.Run(fmt.Sprintf("any input on empty %v", listNames[i]), func(t *testing.T) {
+	for _, list := range lists(empty...) {
+		t.Run(fmt.Sprintf("any input on empty %v", list.Name()), func(t *testing.T) {
 			want := helpers.ToString(empty)
 
 			list.Set(0, 0)
@@ -306,8 +300,8 @@ func TestSet(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		for i, list := range lists(arbitrary...) {
-			t.Run(fmt.Sprintf("%d into index %d in arbitrary %v %v", tc.value, tc.index, listNames[i], arbitrary), func(t *testing.T) {
+		for _, list := range lists(arbitrary...) {
+			t.Run(fmt.Sprintf("%d into index %d in arbitrary %v %v", tc.value, tc.index, list.Name(), arbitrary), func(t *testing.T) {
 				list.Set(tc.index, tc.value)
 				got := list.String()
 				want := tc.want

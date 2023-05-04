@@ -6,6 +6,8 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils"
 )
 
+const doublyLinkedList = "DoublyLinkedList"
+
 type List[T any] struct {
 	size int
 	head *node[T]
@@ -24,6 +26,10 @@ func New[T any](vs ...T) *List[T] {
 	list := &List[T]{}
 	list.Add(vs...)
 	return list
+}
+
+func (l *List[T]) Name() string {
+	return doublyLinkedList
 }
 
 // Size returns the number of nodes inside the List.
@@ -46,6 +52,11 @@ func (l *List[T]) Values() []T {
 	return vs[:l.size:l.size]
 }
 
+// String returns a string representation of the List.
+func (l *List[T]) String() string {
+	return fmt.Sprintf("%v", l.Values())
+}
+
 // Reset clears the size, and head and tail nodes of the List (but the List itself is not nil).
 func (l *List[T]) Reset() {
 	l.size = 0
@@ -59,11 +70,6 @@ func (l *List[T]) Sort(comp utils.Comparator[T]) {
 	utils.Sort(vs, comp)
 	l.Reset()
 	l.Add(vs...)
-}
-
-// String returns a string representation of the List.
-func (l *List[T]) String() string {
-	return fmt.Sprintf("%v", l.Values())
 }
 
 // Add creates and inserts a new node at the tail end of the List, for every T value received as input.
