@@ -1,4 +1,4 @@
-package singlylinkedlist
+package arraylist
 
 import (
 	"fmt"
