@@ -1,6 +1,8 @@
-package search
+package binarysearch
 
-func BinarySearch(s []int, searchValue int) (idx int, ok bool) {
+import "golang.org/x/exp/constraints"
+
+func Search[T constraints.Ordered](s []T, searchValue T) (idx int, ok bool) {
 	if len(s) == 0 {
 		return
 	}
