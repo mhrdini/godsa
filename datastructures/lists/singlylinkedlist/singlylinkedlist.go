@@ -3,7 +3,8 @@ package singlylinkedlist
 import (
 	"fmt"
 
-	"github.com/mhrdini/godsa/datastructures/utils"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
+	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
 const singlyLinkedList = "SinglyLinkedList"
@@ -62,10 +63,10 @@ func (l *List[T]) Reset() {
 	l.tail = nil
 }
 
-// Sort receives a utils.Comparator function used to sort the values in-place.
-func (l *List[T]) Sort(comp utils.Comparator[T]) {
+// Sort receives a comparator.Comparator function used to sort the values in-place.
+func (l *List[T]) Sort(comp comparator.Comparator[T]) {
 	vs := l.Values()
-	utils.Sort(vs, comp)
+	sorter.Sort(vs, comp)
 	l.Reset()
 	l.Add(vs...)
 }
@@ -255,6 +256,15 @@ func (l *List[T]) Set(i int, v T) bool {
 		curr.value = v
 		return true
 	}
+}
+
+func (l *List[T]) Swap(i, j int) bool {
+	iv, ok1 := l.Get(i)
+	jv, ok2 := l.Get(j)
+	if !ok1 || !ok2 {
+		return false
+	}
+	return l.Set(i, jv) && l.Set(j, iv)
 }
 
 // Concat uses Add to create new nodes out of a variadic input of Lists and inserts each one into

@@ -1,4 +1,4 @@
-package utils
+package comparator
 
 import "golang.org/x/exp/constraints"
 

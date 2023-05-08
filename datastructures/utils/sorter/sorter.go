@@ -1,16 +1,18 @@
-package utils
+package sorter
 
 import (
 	"sort"
+
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
-func Sort[T any](vs []T, comp Comparator[T]) {
+func Sort[T any](vs []T, comp comparator.Comparator[T]) {
 	sort.Sort(sortable[T]{values: vs, comparator: comp})
 }
 
 type sortable[T any] struct {
 	values     []T
-	comparator Comparator[T]
+	comparator comparator.Comparator[T]
 }
 
 func (s sortable[T]) Len() int {

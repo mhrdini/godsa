@@ -7,7 +7,7 @@ import (
 	"github.com/mhrdini/godsa/datastructures/lists/arraylist"
 	"github.com/mhrdini/godsa/datastructures/lists/doublylinkedlist"
 	"github.com/mhrdini/godsa/datastructures/lists/singlylinkedlist"
-	"github.com/mhrdini/godsa/datastructures/utils"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 	"github.com/mhrdini/godsa/helpers"
 )
 
@@ -36,7 +36,7 @@ func TestSort(t *testing.T) {
 
 	for _, list := range lists(orderedConstraintIntList...) {
 		t.Run(fmt.Sprintf("using OrderedComparator for int %v", list.Name()), func(t *testing.T) {
-			list.Sort(utils.OrderedComparator[int])
+			list.Sort(comparator.OrderedComparator[int])
 			got := list.String()
 			want := helpers.ToString([]int{3, 29, 90})
 			helpers.AssertEqual(t, got, want)
@@ -45,7 +45,7 @@ func TestSort(t *testing.T) {
 
 	for _, list := range lists(orderedConstraintStringList...) {
 		t.Run(fmt.Sprintf("using OrderedComparator for string %v", list.Name()), func(t *testing.T) {
-			list.Sort(utils.OrderedComparator[string])
+			list.Sort(comparator.OrderedComparator[string])
 			got := list.String()
 			want := helpers.ToString([]string{"aba", "xy", "z"})
 			helpers.AssertEqual(t, got, want)
@@ -63,13 +63,13 @@ func TestSort(t *testing.T) {
 	}
 
 	byTitle := func(a, b movie) int {
-		return utils.OrderedComparator(a.title, b.title)
+		return comparator.OrderedComparator(a.title, b.title)
 	}
 	byCriticScore := func(a, b movie) int {
-		return utils.OrderedComparator(a.score.criticValue, b.score.criticValue)
+		return comparator.OrderedComparator(a.score.criticValue, b.score.criticValue)
 	}
 	byAudienceScore := func(a, b movie) int {
-		return utils.OrderedComparator(a.score.audienceValue, b.score.audienceValue)
+		return comparator.OrderedComparator(a.score.audienceValue, b.score.audienceValue)
 	}
 
 	movie1 := movie{"Aftersun", rating{0.90, 0.86}}
@@ -309,4 +309,42 @@ func TestSet(t *testing.T) {
 			})
 		}
 	}
+}
+
+func TestSwap(t *testing.T) {
+	empty := []int{}
+
+	for _, list := range lists(empty...) {
+		t.Run(fmt.Sprintf("any input on empty %v", list.Name()), func(t *testing.T) {
+			want := false
+
+			got := list.Swap(0, 1)
+			helpers.AssertEqual(t, got, want)
+		})
+	}
+
+	arbitrary := []int{1, 2, 3}
+
+	testCases := []struct {
+		index1 int
+		index2 int
+		want   string
+	}{
+		{0, 1, helpers.ToString([]int{2, 1, 3})},
+		{1, 0, helpers.ToString([]int{2, 1, 3})},
+		{2, 0, helpers.ToString([]int{3, 2, 1})},
+		{3, 0, helpers.ToString([]int{1, 2, 3})},
+	}
+
+	for _, tc := range testCases {
+		for _, list := range lists(arbitrary...) {
+			t.Run(fmt.Sprintf("indexes %d and %d in arbitrary %v %v", tc.index1, tc.index2, list.Name(), arbitrary), func(t *testing.T) {
+				list.Swap(tc.index1, tc.index2)
+				got := list.String()
+				want := tc.want
+				helpers.AssertEqual(t, got, want)
+			})
+		}
+	}
+
 }

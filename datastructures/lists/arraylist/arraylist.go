@@ -3,7 +3,8 @@ package arraylist
 import (
 	"fmt"
 
-	"github.com/mhrdini/godsa/datastructures/utils"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
+	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
 const arrayList = "ArrayList"
@@ -52,8 +53,8 @@ func (l *List[T]) Reset() {
 	l.list = []T{}
 }
 
-func (l *List[T]) Sort(comp utils.Comparator[T]) {
-	utils.Sort(l.list[:l.size], comp)
+func (l *List[T]) Sort(comp comparator.Comparator[T]) {
+	sorter.Sort(l.list[:l.size], comp)
 }
 
 func (l *List[T]) Add(vs ...T) bool {
@@ -127,6 +128,15 @@ func (l *List[T]) Set(i int, v T) bool {
 		l.list[i] = v
 		return true
 	}
+}
+
+func (l *List[T]) Swap(i, j int) bool {
+	iv, ok1 := l.Get(i)
+	jv, ok2 := l.Get(j)
+	if !ok1 || !ok2 {
+		return false
+	}
+	return l.Set(i, jv) && l.Set(j, iv)
 }
 
 func (l *List[T]) Concat(ls ...*List[T]) {

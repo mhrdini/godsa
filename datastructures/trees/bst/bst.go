@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
-	"github.com/mhrdini/godsa/datastructures/utils"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
 const bst = "BST"
@@ -23,7 +23,7 @@ type Node[T any] struct {
 
 type traversal[T any] func(n *Node[T], ch chan T)
 
-func New[T any](comp utils.Comparator[T], vs ...T) *Tree[T] {
+func New[T any](comp comparator.Comparator[T], vs ...T) *Tree[T] {
 	t := &Tree[T]{size: 0, root: nil, compare: comp}
 	for _, v := range vs {
 		t.Insert(v)
@@ -78,7 +78,7 @@ func (t *Tree[T]) Insert(v T) {
 	t.size++
 }
 
-func (n *Node[T]) Insert(newNode *Node[T], compare utils.Comparator[T]) {
+func (n *Node[T]) Insert(newNode *Node[T], compare comparator.Comparator[T]) {
 	switch result := compare(newNode.value, n.value); result {
 	case 1:
 		if n.right == nil {
