@@ -22,7 +22,7 @@ type Node[T any] struct {
 	right  *Node[T]
 }
 
-func New[T any](comp comparator.Comparator[T], vs ...T) *Tree[T] {
+func New[T any](comp comparator.Comparator[T], vs ...T) trees.ITree[T] {
 	t := &Tree[T]{size: 0, root: nil, compare: comp}
 	if len(vs) > 0 {
 		for _, v := range vs {
@@ -61,6 +61,14 @@ func (t *Tree[T]) Root() trees.INode[T] {
 	return t.root
 }
 
+func (t *Tree[T]) Insert(v T) {
+	t.root = t.root.insert(t, v)
+}
+
+func (t *Tree[T]) Remove(v T) {
+	t.root = t.root.remove(t, v)
+}
+
 func (n *Node[T]) Value() (value T, ok bool) {
 	if n == nil {
 		return
@@ -84,10 +92,6 @@ func (n *Node[T]) Right() trees.INode[T] {
 	return n.right
 }
 
-func (t *Tree[T]) Insert(v T) {
-	t.root = t.root.insert(t, v)
-}
-
 func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {
 	if n == nil {
 		tree.size++
@@ -99,6 +103,34 @@ func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {
 		n.left = n.left.insert(tree, v)
 	case 1:
 		n.right = n.right.insert(tree, v)
+	}
+	return n.balance()
+}
+
+func (n *Node[T]) remove(tree *Tree[T], v T) *Node[T] {
+	if n == nil {
+		return nil
+	}
+	switch result := tree.compare(v, n.value); result {
+	case -1:
+		n.left = n.left.remove(tree, v)
+	case 1:
+		n.right = n.right.remove(tree, v)
+	default:
+		if n.left == nil {
+			tree.size--
+			return n.right
+		} else if n.right == nil {
+			tree.size--
+			return n.left
+		}
+
+		smallestSuccessor := n.right.getSmallestNode()
+		smallestSuccessorValue, ok := smallestSuccessor.Value()
+		if ok {
+			n.value = smallestSuccessorValue
+		}
+		n.right = n.right.remove(tree, smallestSuccessorValue)
 	}
 	return n.balance()
 }
@@ -158,6 +190,14 @@ func (n *Node[T]) getHeight() int {
 		return 0
 	}
 	return n.height
+}
+
+func (n *Node[T]) getSmallestNode() *Node[T] {
+	currNode := n
+	for currNode.left != nil {
+		currNode = currNode.left
+	}
+	return currNode
 }
 
 func maxOf(a, b int) int {
