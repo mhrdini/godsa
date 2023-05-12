@@ -2,7 +2,7 @@ package heapsort
 
 import (
 	"github.com/mhrdini/godsa/datastructures/lists/arraylist"
-	"github.com/mhrdini/godsa/datastructures/trees/binaryheap"
+	"github.com/mhrdini/godsa/datastructures/trees/heaps/binaryheap"
 	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 	"golang.org/x/exp/constraints"
 )

@@ -14,45 +14,41 @@ type ITree[T any] interface {
 
 type INode[T any] interface {
 	Value() (value T, ok bool)
-	Left() INode[T]
-	Right() INode[T]
+	Children() []INode[T]
+	Height() int
 	// String() string
 }
 
 type Traverser[T any] func(n INode[T], ch chan T)
 
 func InOrder[T any](n INode[T], ch chan T) {
-	if n.Left() != nil {
-		InOrder(n.Left(), ch)
-	}
 	if value, ok := n.Value(); ok {
+		children := n.Children()
+		totalChildren := len(children)
+		for i := 0; i < totalChildren-1; i++ {
+			InOrder(children[i], ch)
+		}
 		ch <- value
-	}
-	if n.Right() != nil {
-		InOrder(n.Right(), ch)
+		InOrder(children[totalChildren-1], ch)
 	}
 }
 
 func PreOrder[T any](n INode[T], ch chan T) {
 	if value, ok := n.Value(); ok {
 		ch <- value
-	}
-	if n.Left() != nil {
-		PreOrder(n.Left(), ch)
-	}
-	if n.Right() != nil {
-		PreOrder(n.Right(), ch)
+		children := n.Children()
+		for _, child := range children {
+			PreOrder(child, ch)
+		}
 	}
 }
 
 func PostOrder[T any](n INode[T], ch chan T) {
-	if n.Left() != nil {
-		PostOrder(n.Left(), ch)
-	}
-	if n.Right() != nil {
-		PostOrder(n.Right(), ch)
-	}
 	if value, ok := n.Value(); ok {
+		children := n.Children()
+		for _, child := range children {
+			PostOrder(child, ch)
+		}
 		ch <- value
 	}
 }
@@ -64,12 +60,11 @@ func LevelOrder[T any](n INode[T], ch chan T) {
 		node, _ := queue.Dequeue()
 		if value, ok := node.Value(); ok {
 			ch <- value
-		}
-		if node.Left() != nil {
-			queue.Enqueue(node.Left())
-		}
-		if node.Right() != nil {
-			queue.Enqueue(node.Right())
+			for _, child := range node.Children() {
+				if child != nil {
+					queue.Enqueue(child)
+				}
+			}
 		}
 	}
 }

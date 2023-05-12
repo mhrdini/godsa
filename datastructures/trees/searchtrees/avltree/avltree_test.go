@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	tree "github.com/mhrdini/godsa/datastructures/trees"
+	"github.com/mhrdini/godsa/datastructures/trees"
 	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 	"github.com/mhrdini/godsa/helpers"
 )
@@ -50,7 +50,7 @@ func baseName(index int) string {
 }
 
 type result struct {
-	traverser tree.Traverser[int]
+	traverser trees.Traverser[int]
 	simple    string
 	normal    string
 	complex   string
@@ -98,25 +98,25 @@ func TestInsert(t *testing.T) {
 		{
 			input: 15,
 			inOrder: result{
-				traverser: tree.InOrder[int],
+				traverser: trees.InOrder[int],
 				simple:    helpers.ToString([]int{4, 15, 20}),
 				normal:    helpers.ToString([]int{3, 4, 9, 15, 20, 26}),
 				complex:   helpers.ToString([]int{2, 3, 4, 7, 9, 11, 15, 20, 21, 26, 30}),
 			},
 			preOrder: result{
-				traverser: tree.PreOrder[int],
+				traverser: trees.PreOrder[int],
 				simple:    helpers.ToString([]int{15, 4, 20}),
 				normal:    helpers.ToString([]int{9, 4, 3, 20, 15, 26}),
 				complex:   helpers.ToString([]int{9, 4, 3, 2, 7, 20, 11, 15, 26, 21, 30}),
 			},
 			postOrder: result{
-				traverser: tree.PostOrder[int],
+				traverser: trees.PostOrder[int],
 				simple:    helpers.ToString([]int{4, 20, 15}),
 				normal:    helpers.ToString([]int{3, 4, 15, 26, 20, 9}),
 				complex:   helpers.ToString([]int{2, 3, 7, 4, 15, 11, 21, 30, 26, 20, 9}),
 			},
 			levelOrder: result{
-				traverser: tree.LevelOrder[int],
+				traverser: trees.LevelOrder[int],
 				simple:    helpers.ToString([]int{15, 4, 20}),
 				normal:    helpers.ToString([]int{9, 4, 20, 3, 15, 26}),
 				complex:   helpers.ToString([]int{9, 4, 20, 3, 7, 11, 26, 2, 15, 21, 30}),
@@ -125,25 +125,25 @@ func TestInsert(t *testing.T) {
 		{
 			input: 8,
 			inOrder: result{
-				traverser: tree.InOrder[int],
+				traverser: trees.InOrder[int],
 				simple:    helpers.ToString([]int{4, 8, 20}),
 				normal:    helpers.ToString([]int{3, 4, 8, 9, 20, 26}),
 				complex:   helpers.ToString([]int{2, 3, 4, 7, 8, 9, 11, 20, 21, 26, 30}),
 			},
 			preOrder: result{
-				traverser: tree.PreOrder[int],
+				traverser: trees.PreOrder[int],
 				simple:    helpers.ToString([]int{8, 4, 20}),
 				normal:    helpers.ToString([]int{9, 4, 3, 8, 20, 26}),
 				complex:   helpers.ToString([]int{9, 4, 3, 2, 7, 8, 20, 11, 26, 21, 30}),
 			},
 			postOrder: result{
-				traverser: tree.PostOrder[int],
+				traverser: trees.PostOrder[int],
 				simple:    helpers.ToString([]int{4, 20, 8}),
 				normal:    helpers.ToString([]int{3, 8, 4, 26, 20, 9}),
 				complex:   helpers.ToString([]int{2, 3, 8, 7, 4, 11, 21, 30, 26, 20, 9}),
 			},
 			levelOrder: result{
-				traverser: tree.LevelOrder[int],
+				traverser: trees.LevelOrder[int],
 				simple:    helpers.ToString([]int{8, 4, 20}),
 				normal:    helpers.ToString([]int{9, 4, 20, 3, 8, 26}),
 				complex:   helpers.ToString([]int{9, 4, 20, 3, 7, 11, 26, 2, 8, 21, 30}),
@@ -160,22 +160,22 @@ func TestInsert(t *testing.T) {
 			var got, want string
 
 			t.Run(fmt.Sprintf("%d into %v %v inorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.inOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.inOrder.traverser))
 				want = getResult(tc.inOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d into %v %v preorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.preOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.preOrder.traverser))
 				want = getResult(tc.preOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d into %v %v postorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.postOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.postOrder.traverser))
 				want = getResult(tc.postOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d into %v %v levelorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.levelOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.levelOrder.traverser))
 				want = getResult(tc.levelOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
@@ -194,25 +194,25 @@ func TestRemove(t *testing.T) {
 		{
 			input: 1,
 			inOrder: result{
-				traverser: tree.InOrder[int],
+				traverser: trees.InOrder[int],
 				simple:    helpers.ToString([]int{2, 3, 4, 5}),
 				normal:    helpers.ToString([]int{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}),
 				complex:   helpers.ToString([]int{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}),
 			},
 			preOrder: result{
-				traverser: tree.PreOrder[int],
+				traverser: trees.PreOrder[int],
 				simple:    helpers.ToString([]int{4, 2, 3, 5}),
 				normal:    helpers.ToString([]int{6, 4, 2, 3, 5, 9, 8, 7, 11, 10, 12, 13}),
 				complex:   helpers.ToString([]int{8, 5, 3, 2, 4, 7, 6, 10, 9, 11, 12}),
 			},
 			postOrder: result{
-				traverser: tree.PostOrder[int],
+				traverser: trees.PostOrder[int],
 				simple:    helpers.ToString([]int{3, 2, 5, 4}),
 				normal:    helpers.ToString([]int{3, 2, 5, 4, 7, 8, 10, 13, 12, 11, 9, 6}),
 				complex:   helpers.ToString([]int{2, 4, 3, 6, 7, 5, 9, 12, 11, 10, 8}),
 			},
 			levelOrder: result{
-				traverser: tree.LevelOrder[int],
+				traverser: trees.LevelOrder[int],
 				simple:    helpers.ToString([]int{4, 2, 5, 3}),
 				normal:    helpers.ToString([]int{6, 4, 9, 2, 5, 8, 11, 3, 7, 10, 12, 13}),
 				complex:   helpers.ToString([]int{8, 5, 10, 3, 7, 9, 11, 2, 4, 6, 12}),
@@ -229,22 +229,22 @@ func TestRemove(t *testing.T) {
 			var got, want string
 
 			t.Run(fmt.Sprintf("%d from %v %v inorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.inOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.inOrder.traverser))
 				want = getResult(tc.inOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d from %v %v preorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.preOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.preOrder.traverser))
 				want = getResult(tc.preOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d from %v %v postorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.postOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.postOrder.traverser))
 				want = getResult(tc.postOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})
 			t.Run(fmt.Sprintf("%d from %v %v levelorder", tc.input, treeCase.Name(), baseName), func(t *testing.T) {
-				got = helpers.ToString(tree.Traverse(treeCase, tc.levelOrder.traverser))
+				got = helpers.ToString(trees.Traverse(treeCase, tc.levelOrder.traverser))
 				want = getResult(tc.levelOrder, i)
 				helpers.AssertEqual(t, got, want)
 			})

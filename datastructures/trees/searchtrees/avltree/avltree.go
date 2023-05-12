@@ -1,4 +1,4 @@
-package bst
+package avltree
 
 import (
 	"fmt"
@@ -7,30 +7,33 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
-const bst = "BST"
+const avltree = "AVLTree"
 
 type Tree[T any] struct {
 	size    int
 	root    *Node[T]
-	compare func(a, b T) int
+	compare comparator.Comparator[T]
 }
 
 type Node[T any] struct {
-	value T
-	left  *Node[T]
-	right *Node[T]
+	value  T
+	height int
+	left   *Node[T]
+	right  *Node[T]
 }
 
 func New[T any](comp comparator.Comparator[T], vs ...T) trees.ITree[T] {
 	t := &Tree[T]{size: 0, root: nil, compare: comp}
-	for _, v := range vs {
-		t.Insert(v)
+	if len(vs) > 0 {
+		for _, v := range vs {
+			t.Insert(v)
+		}
 	}
 	return t
 }
 
 func (t *Tree[T]) Name() string {
-	return bst
+	return avltree
 }
 
 func (t *Tree[T]) Size() int {
@@ -75,18 +78,30 @@ func (n *Node[T]) Value() (value T, ok bool) {
 	return
 }
 
-func (n *Node[T]) Left() trees.INode[T] {
-	if n == nil {
-		return nil
-	}
-	return n.left
+func (n *Node[T]) Height() int {
+	return n.height
 }
 
-func (n *Node[T]) Right() trees.INode[T] {
-	if n == nil {
-		return nil
+func (n *Node[T]) Children() []trees.INode[T] {
+	return []trees.INode[T]{
+		0: n.left,
+		1: n.right,
 	}
-	return n.right
+}
+
+func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {
+	if n == nil {
+		tree.size++
+		return &Node[T]{value: v, height: 1, left: nil, right: nil}
+	}
+
+	switch result := tree.compare(v, n.value); result {
+	case -1:
+		n.left = n.left.insert(tree, v)
+	case 1:
+		n.right = n.right.insert(tree, v)
+	}
+	return n.balance()
 }
 
 func (n *Node[T]) remove(tree *Tree[T], v T) *Node[T] {
@@ -114,22 +129,64 @@ func (n *Node[T]) remove(tree *Tree[T], v T) *Node[T] {
 		}
 		n.right = n.right.remove(tree, smallestSuccessorValue)
 	}
+	return n.balance()
+}
+
+func (n *Node[T]) balance() *Node[T] {
+	if n == nil {
+		return n
+	}
+
+	n.updateHeight()
+
+	switch balanceFactor := n.balanceFactor(); balanceFactor {
+	case 2:
+		if n.left != nil && n.left.balanceFactor() == -1 {
+			n.left = n.left.leftRotate()
+		}
+		return n.rightRotate()
+	case -2:
+		if n.right != nil && n.right.balanceFactor() == 1 {
+			n.right = n.right.rightRotate()
+		}
+		return n.leftRotate()
+	}
 	return n
 }
 
-func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {
-	if n == nil {
-		tree.size++
-		return &Node[T]{value: v, left: nil, right: nil}
-	}
+func (n *Node[T]) leftRotate() *Node[T] {
+	newRoot := n.right
+	n.right = newRoot.left
+	newRoot.left = n
 
-	switch result := tree.compare(v, n.value); result {
-	case -1:
-		n.left = n.left.insert(tree, v)
-	case 1:
-		n.right = n.right.insert(tree, v)
+	n.updateHeight()
+	newRoot.updateHeight()
+	return newRoot
+}
+
+func (n *Node[T]) rightRotate() *Node[T] {
+	newRoot := n.left
+	n.left = newRoot.right
+	newRoot.right = n
+
+	n.updateHeight()
+	newRoot.updateHeight()
+	return newRoot
+}
+
+func (n *Node[T]) balanceFactor() int {
+	return n.left.getHeight() - n.right.getHeight()
+}
+
+func (n *Node[T]) updateHeight() {
+	n.height = maxOf(n.left.getHeight(), n.right.getHeight()) + 1
+}
+
+func (n *Node[T]) getHeight() int {
+	if n == nil {
+		return 0
 	}
-	return n
+	return n.height
 }
 
 func (n *Node[T]) getSmallestNode() *Node[T] {
@@ -138,4 +195,11 @@ func (n *Node[T]) getSmallestNode() *Node[T] {
 		currNode = currNode.left
 	}
 	return currNode
+}
+
+func maxOf(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }

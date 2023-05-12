@@ -14,8 +14,8 @@ const (
 
 type Heap[T any] struct {
 	list    *arraylist.List[T]
-	compare func(a, b T) int
 	minHeap bool
+	compare comparator.Comparator[T]
 }
 
 func MaxHeap[T any](comp comparator.Comparator[T], vs ...T) *Heap[T] {
