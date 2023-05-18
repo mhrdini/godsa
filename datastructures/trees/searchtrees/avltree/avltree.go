@@ -61,14 +61,6 @@ func (t *Tree[T]) Root() trees.INode[T] {
 	return t.root
 }
 
-func (t *Tree[T]) Insert(v T) {
-	t.root = t.root.insert(t, v)
-}
-
-func (t *Tree[T]) Remove(v T) {
-	t.root = t.root.remove(t, v)
-}
-
 func (n *Node[T]) Value() (value T, ok bool) {
 	if n == nil {
 		return
@@ -78,15 +70,23 @@ func (n *Node[T]) Value() (value T, ok bool) {
 	return
 }
 
-func (n *Node[T]) Height() int {
-	return n.height
-}
-
 func (n *Node[T]) Children() []trees.INode[T] {
 	return []trees.INode[T]{
 		0: n.left,
 		1: n.right,
 	}
+}
+
+func (n *Node[T]) IsNil() bool {
+	return n == nil
+}
+
+func (t *Tree[T]) Insert(v T) {
+	t.root = t.root.insert(t, v)
+}
+
+func (t *Tree[T]) Remove(v T) {
+	t.root = t.root.remove(t, v)
 }
 
 func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {

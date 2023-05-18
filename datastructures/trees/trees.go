@@ -15,13 +15,14 @@ type ITree[T any] interface {
 type INode[T any] interface {
 	Value() (value T, ok bool)
 	Children() []INode[T]
-	Height() int
+	IsNil() bool
 	// String() string
 }
 
 type Traverser[T any] func(n INode[T], ch chan T)
 
 func InOrder[T any](n INode[T], ch chan T) {
+
 	if value, ok := n.Value(); ok {
 		children := n.Children()
 		totalChildren := len(children)
@@ -61,7 +62,7 @@ func LevelOrder[T any](n INode[T], ch chan T) {
 		if value, ok := node.Value(); ok {
 			ch <- value
 			for _, child := range node.Children() {
-				if child != nil {
+				if !child.IsNil() {
 					queue.Enqueue(child)
 				}
 			}
