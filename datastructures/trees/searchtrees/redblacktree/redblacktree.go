@@ -55,7 +55,7 @@ func (t *Tree[T]) Empty() bool {
 }
 
 func (t *Tree[T]) Values() []T {
-	return trees.Traverse(trees.ITree[T](t), trees.InOrder[T])
+	return trees.Traverse(trees.ITree[T](t), trees.LevelOrder[T])
 }
 
 func (t *Tree[T]) String() string {
@@ -148,36 +148,44 @@ func (t *Tree[T]) Insert(v T) {
 
 func (t *Tree[T]) Remove(v T) {
 
-	var replacementSuccessor = t.null
+	var replacement = t.null
 	removed, ok := t.Search(t.root, v)
+
 	if ok {
 		t.size--
-		replacement := removed
-		replacementColor := replacement.color
+
+		successor := removed
+		successorColor := successor.color
+
+		// if left subtree of removed node is nil
 		if removed.left == t.null {
-			replacementSuccessor = removed.right
-			t.transplant(removed, removed.right)
-		} else if removed.right == t.null {
-			replacementSuccessor = removed.left
-			t.transplant(removed, removed.right)
-		} else {
-			replacement = t.minimum(removed.right)
-			replacementColor = replacement.color
-			replacementSuccessor = replacement.right
-			if replacement.parent == removed {
-				replacementSuccessor.parent = replacement
-			} else {
-				t.transplant(replacement, replacement.right)
-				replacement.right = removed.left
-				replacement.right.parent = replacement
-			}
+			replacement = removed.right
 			t.transplant(removed, replacement)
-			replacement.left = removed.left
-			replacement.left.parent = replacement
-			replacement.color = removed.color
+			// if right subtree of removed node is nil
+		} else if removed.right == t.null {
+			replacement = removed.left
+			t.transplant(removed, replacement)
+			// if neither subtree of removed node is nil
+		} else {
+			successor = t.minimum(removed.right)
+			successorColor = successor.color
+			replacement = successor.right
+
+			if successor != removed.right {
+				t.transplant(successor, successor.right)
+				successor.right = removed.right
+				successor.right.parent = successor
+			} else {
+				replacement.parent = successor
+			}
+
+			t.transplant(removed, successor)
+			successor.left = removed.left
+			successor.left.parent = successor
+			successor.color = removed.color
 		}
-		if replacementColor == black {
-			t.fixPostRemove(replacementSuccessor)
+		if successorColor == black {
+			t.fixPostRemove(replacement)
 		}
 	}
 }
@@ -236,75 +244,77 @@ func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 
 func (t *Tree[T]) fixPostRemove(n *Node[T]) {
 
-	var sibling = t.null
-	node := n
+	for n != t.root && n.color == black {
+		if n.parent != t.null {
 
-	for node != t.root && node.color == black {
-		if node.parent != t.null {
-			switch node {
-			case node.parent.left:
-				sibling = node.parent.right
+			parent := n.parent
+			n.parent = nil
+
+			switch n {
+			case parent.left:
+				sibling := parent.right
 				// case 1
 				if sibling.color == red {
 					sibling.color = black
-					node.parent.color = red
-					t.leftRotate(node.parent)
-					sibling = node.parent.right
+					parent.color = red
+					t.leftRotate(parent)
+					sibling = parent.right
 				}
 				// case 2
 				if sibling.left.color == black && sibling.right.color == black {
 					sibling.color = red
-					node = node.parent
+					n = parent
 				} else {
 					// case 3
 					if sibling.right.color == black {
 						sibling.left.color = black
 						sibling.color = red
 						t.rightRotate(sibling)
-						sibling = node.parent.right
+						sibling = parent.right
 					}
 					// case 4
-					sibling.color = node.parent.color
-					node.parent.color = black
+					sibling.color = parent.color
+					parent.color = black
 					sibling.right.color = black
-					t.leftRotate(node.parent)
-					node = t.root
+					t.leftRotate(parent)
+					n = t.root
 				}
-			case node.parent.right:
-				sibling = node.parent.left
+			case parent.right:
+				sibling := parent.left
 				// case 1
 				if sibling.color == red {
 					sibling.color = black
-					node.parent.color = red
-					t.rightRotate(node.parent)
-					sibling = node.parent.left
+					parent.color = red
+					t.rightRotate(parent)
+					sibling = parent.left
 				}
 				// case 2
 				if sibling.right.color == black && sibling.left.color == black {
 					sibling.color = red
-					node = node.parent
+					n = parent
 				} else {
 					// case 3
 					if sibling.left.color == black {
 						sibling.right.color = black
 						sibling.color = red
 						t.leftRotate(sibling)
-						sibling = node.parent.left
+						sibling = parent.left
 					}
 					// case 4
-					sibling.color = node.parent.color
-					node.parent.color = black
+					sibling.color = parent.color
+					parent.color = black
 					sibling.left.color = black
-					t.rightRotate(node.parent)
-					node = t.root
+					t.rightRotate(parent)
+					n = t.root
 				}
 			}
 		}
 	}
-	node.color = black
+	n.color = black
 }
 
 func (t *Tree[T]) leftRotate(n *Node[T]) {
+
 	newRoot := n.right
 	n.right = newRoot.left
 	if newRoot.left != t.null {
@@ -342,9 +352,10 @@ func (t *Tree[T]) rightRotate(n *Node[T]) {
 }
 
 func (t *Tree[T]) transplant(original, replacement *Node[T]) {
+
 	if original.parent == t.null {
 		t.root = replacement
-	} else if original == replacement.parent.left {
+	} else if original == original.parent.left {
 		original.parent.left = replacement
 	} else {
 		original.parent.right = replacement
