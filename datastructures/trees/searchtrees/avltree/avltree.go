@@ -7,7 +7,7 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
-const avltree = "AVLTree"
+const avlTree = "AVLTree"
 
 type Tree[T any] struct {
 	size    int
@@ -33,7 +33,7 @@ func New[T any](comp comparator.Comparator[T], vs ...T) trees.ITree[T] {
 }
 
 func (t *Tree[T]) Name() string {
-	return avltree
+	return avlTree
 }
 
 func (t *Tree[T]) Size() int {

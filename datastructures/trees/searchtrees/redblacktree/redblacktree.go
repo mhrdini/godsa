@@ -7,7 +7,7 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
-const redblacktree = "RedBlackTree"
+const redBlackTree = "RedBlackTree"
 
 type color bool
 
@@ -43,7 +43,7 @@ func New[T any](comp comparator.Comparator[T], vs ...T) trees.ITree[T] {
 }
 
 func (t *Tree[T]) Name() string {
-	return redblacktree
+	return redBlackTree
 }
 
 func (t *Tree[T]) Size() int {
