@@ -9,6 +9,10 @@ import (
 )
 
 func Run(g datastructures.Graph) []*graphs.Vertex {
+	return recursiveRun(g)
+}
+
+func recursiveRun(g datastructures.Graph) []*graphs.Vertex {
 	vertices := make([]*graphs.Vertex, g.Size())
 	for i := 0; i < g.Size(); i++ {
 		vertices[i] = &graphs.Vertex{Color: graphs.White, Value: i, Parent: nil}
@@ -16,13 +20,13 @@ func Run(g datastructures.Graph) []*graphs.Vertex {
 	time := 0
 	for i := 0; i < g.Size(); i++ {
 		if vertices[i].Color == graphs.White {
-			visit(g, vertices, i, &time)
+			Visit(g, vertices, i, &time)
 		}
 	}
 	return vertices
 }
 
-func visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) {
+func Visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) {
 	*time++
 	discovered := vertices[u]
 	discovered.Color = graphs.Gray
@@ -30,7 +34,7 @@ func visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) 
 		neighbor := vertices[v]
 		if neighbor.Color == graphs.White {
 			neighbor.Parent = discovered
-			visit(g, vertices, v, time)
+			Visit(g, vertices, v, time)
 		}
 	}
 	*time++

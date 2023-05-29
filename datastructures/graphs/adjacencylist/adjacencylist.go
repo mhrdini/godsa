@@ -72,6 +72,28 @@ func (g *Graph) Neighbors(v int) []int {
 	return vs
 }
 
+func (g *Graph) Transpose() graphs.Graph {
+	if !g.undirected {
+		list := emptyList(len(g.list))
+		for _, v := range g.list {
+			for _, e := range v.Values() {
+				edge := &edge{
+					weight: e.weight,
+					src:    e.dst,
+					dst:    e.src,
+				}
+				list[e.dst].Add(edge)
+			}
+		}
+		return &Graph{
+			totalEdges: g.totalEdges,
+			list:       list,
+			undirected: g.undirected,
+		}
+	}
+	return g
+}
+
 func (g *Graph) AddVertex() {
 	g.list = append(g.list, singlylinkedlist.New[*edge]())
 }

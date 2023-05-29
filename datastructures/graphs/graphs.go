@@ -8,6 +8,7 @@ type Graph interface {
 	containers.Container[int]
 	Adjacent(v1, v2 int) bool
 	Neighbors(v int) []int
+	Transpose() Graph
 	AddVertex()
 	RemoveVertex(v int) bool
 	AddEdge(src, dst, weight int) (ok bool)

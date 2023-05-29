@@ -68,6 +68,24 @@ func (g *Graph) Neighbors(v int) []int {
 	return vs
 }
 
+func (g *Graph) Transpose() graphs.Graph {
+	if !g.undirected {
+		matrix := emptyMatrix(g.totalVertices)
+		for i := 0; i < int(g.totalVertices); i++ {
+			for j := 0; j < int(g.totalVertices); j++ {
+				matrix[j][i] = g.matrix[i][j]
+			}
+		}
+		return &Graph{
+			totalVertices: g.totalVertices,
+			totalEdges:    g.totalEdges,
+			matrix:        matrix,
+			undirected:    g.undirected,
+		}
+	}
+	return g
+}
+
 func (g *Graph) AddVertex() {
 	g.totalVertices++
 	matrix := emptyMatrix(g.totalVertices)
