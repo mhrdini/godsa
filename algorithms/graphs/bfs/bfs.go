@@ -10,7 +10,7 @@ import (
 	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
 )
 
-func Run(g datastructures.Graph, s int) {
+func Run(g datastructures.Graph, s int) []*graphs.Vertex {
 	vertices := make([]*graphs.Vertex, g.Size())
 	for i := 0; i < g.Size(); i++ {
 		vertices[i] = &graphs.Vertex{Color: graphs.White, Value: i, Dist: math.Inf(1), Parent: nil}
@@ -18,10 +18,8 @@ func Run(g datastructures.Graph, s int) {
 	vertices[s].Color = graphs.Gray
 	vertices[s].Dist = 0
 	vertices[s].Parent = nil
-
 	q := linkedlistqueue.New[*graphs.Vertex]()
 	q.Enqueue(vertices[s])
-	fmt.Println(q)
 	for !q.Empty() {
 		u, _ := q.Dequeue()
 		visited := vertices[u.Value]
@@ -35,8 +33,8 @@ func Run(g datastructures.Graph, s int) {
 			}
 		}
 		visited.Color = graphs.Black
-		fmt.Println(q)
 	}
+	return vertices
 }
 
 func Demo() {
@@ -44,7 +42,6 @@ func Demo() {
 		TotalVertices: 9,
 		Undirected:    true,
 	})
-
 	g.AddEdge(0, 1, 1)
 	g.AddEdge(0, 2, 1)
 	g.AddEdge(0, 5, 1)
@@ -58,5 +55,5 @@ func Demo() {
 	g.AddEdge(5, 8, 1)
 	g.AddEdge(6, 7, 1)
 	g.AddEdge(6, 8, 1)
-	Run(g, 1)
+	fmt.Println(Run(g, 1))
 }
