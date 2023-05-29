@@ -10,8 +10,8 @@ import (
 const adjacencyList = "AdjacencyList"
 
 type Graph struct {
-	totalEdges uint32 // size of a graph
-	list       []*singlylinkedlist.List[*edge]
+	totalEdges uint32                          // size of a graph
+	list       []*singlylinkedlist.List[*edge] // adjacency lists
 	undirected bool
 }
 
@@ -50,7 +50,8 @@ func (g *Graph) Values() []int {
 }
 
 func (g *Graph) String() string {
-	return fmt.Sprintf("total edges: %v, total vertices: %v, undirected: %v\n%v", g.totalEdges, len(g.list), g.undirected, g.list)
+	// return fmt.Sprintf("total edges: %v, total vertices: %v, undirected: %v\n%v", g.totalEdges, len(g.list), g.undirected, g.list)
+	return fmt.Sprintf("%v", g.list)
 }
 
 func (g *Graph) Reset() {
@@ -71,12 +72,39 @@ func (g *Graph) Neighbors(v int) []int {
 	return vs
 }
 
+func (g *Graph) AddVertex() {
+	g.list = append(g.list, singlylinkedlist.New[*edge]())
+}
+
+func (g *Graph) RemoveVertex(v int) bool {
+	if !g.withinRange(v) {
+		return false
+	}
+	for _, list := range g.list {
+		edges := []int{}
+		for i, edge := range list.Values() {
+			if edge.src == v || edge.dst == v {
+				edges = append(edges, i)
+			}
+			if edge.dst > v {
+				edge.dst -= 1
+			}
+		}
+		for i := range edges {
+			list.Remove(i)
+		}
+	}
+
+	g.list = append(g.list[:v], g.list[v+1:]...)
+
+	return true
+}
+
 func (g *Graph) AddEdge(src, dst, weight int) bool {
 	return g.UpdateEdge(src, dst, weight)
 }
 
 func (g *Graph) UpdateEdge(src, dst, weight int) bool {
-
 	var directed, undirected bool
 
 	if idxs, ok := g.hasEdges(src, dst); ok {
@@ -150,12 +178,11 @@ func (g *Graph) hasEdges(src, dst int) ([]int, bool) {
 }
 
 func (e *edge) String() string {
-	switch e.weight {
-	case 0:
-		return fmt.Sprintf("{%v -> %v}", e.src, e.dst)
-	default:
-		return fmt.Sprintf("{%v -> %v = %v}", e.src, e.dst, e.weight)
-	}
+	return fmt.Sprintf("(%v, %v, %v)", e.src, e.dst, e.weight)
+}
+
+func (g *Graph) withinRange(v int) bool {
+	return v < len(g.list)
 }
 
 func emptyList(order int) []*singlylinkedlist.List[*edge] {

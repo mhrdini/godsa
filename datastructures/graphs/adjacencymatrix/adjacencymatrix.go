@@ -28,12 +28,15 @@ func New(o graphs.Options) graphs.Graph {
 func (g *Graph) Name() string {
 	return adjacencyMatrix
 }
+
 func (g *Graph) Size() int {
 	return int(g.totalVertices)
 }
+
 func (g *Graph) Empty() bool {
 	return g.totalEdges == 0
 }
+
 func (g *Graph) Values() []int {
 	vs := []int{}
 	for i := 0; i < g.Size(); i++ {
@@ -41,9 +44,11 @@ func (g *Graph) Values() []int {
 	}
 	return vs
 }
+
 func (g *Graph) String() string {
-	return fmt.Sprintf("%v", g.Values())
+	return fmt.Sprintf("%v", g.matrix)
 }
+
 func (g *Graph) Reset() {
 	g.totalEdges = 0
 	g.matrix = emptyMatrix(g.totalVertices)
@@ -56,11 +61,49 @@ func (g *Graph) Adjacent(v1, v2 int) bool {
 func (g *Graph) Neighbors(v int) []int {
 	vs := []int{}
 	for i := 0; i < int(g.totalVertices); i++ {
-		if i != v && g.matrix[v][i] != 0 {
+		if g.matrix[v][i] != 0 {
 			vs = append(vs, i)
 		}
 	}
 	return vs
+}
+
+func (g *Graph) AddVertex() {
+	g.totalVertices++
+	matrix := emptyMatrix(g.totalVertices)
+	for i := uint32(0); i < g.totalVertices-1; i++ {
+		for j := uint32(0); i < g.totalVertices-1; i++ {
+			matrix[i][j] = g.matrix[i][j]
+		}
+	}
+	g.matrix = matrix
+}
+
+func (g *Graph) RemoveVertex(v int) bool {
+	if !g.withinRange(v) {
+		return false
+	}
+	edgesConnected := len(g.Neighbors(v))
+	g.totalEdges -= uint32(edgesConnected)
+	matrix := emptyMatrix(g.totalVertices - 1)
+	for i := uint32(0); i < g.totalVertices; i++ {
+		for j := uint32(0); j < g.totalVertices; j++ {
+			row, col := i, j
+			if row == uint32(v) || col == uint32(v) {
+				continue
+			}
+			if row > uint32(v) {
+				row--
+			}
+			if col > uint32(v) {
+				col--
+			}
+			matrix[row][col] = g.matrix[i][j]
+		}
+	}
+	g.totalVertices--
+	g.matrix = matrix
+	return true
 }
 
 func (g *Graph) AddEdge(src, dst, weight int) bool {
@@ -92,6 +135,10 @@ func (g *Graph) RemoveEdge(src, dst int) (ok bool) {
 
 func (g *Graph) hasEdge(src, dst int) bool {
 	return g.undirected && g.matrix[dst][src] != zeroWeight && g.matrix[src][dst] != zeroWeight || g.matrix[src][dst] != zeroWeight
+}
+
+func (g *Graph) withinRange(v int) bool {
+	return uint32(v) < g.totalVertices
 }
 
 func emptyMatrix(order uint32) [][]int {
