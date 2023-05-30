@@ -9,10 +9,68 @@ import (
 
 	datastructures "github.com/mhrdini/godsa/datastructures/graphs"
 	"github.com/mhrdini/godsa/datastructures/graphs/adjacencylist"
+	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
 	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
-func Sort(g datastructures.Graph) []int {
+func SortBFS(g datastructures.Graph) []int {
+	inDegrees := make([]int, g.Size())
+	for i := 0; i < g.Size(); i++ {
+		for _, e := range g.Neighbors(i) {
+			inDegrees[e]++
+		}
+	}
+
+	// enqueue vertices with 0 indegrees
+	// dequeue a vertex
+	// add to toposort
+	// update indegrees of all vertices
+
+	toposort := []int{}
+	q := linkedlistqueue.New[int]()
+	queued := map[int]bool{}
+	toBeQueued := findZeroInDegree(inDegrees)
+	for _, v := range toBeQueued {
+		if done, ok := queued[v]; !ok || !done {
+			queued[v] = true
+			q.Enqueue(v)
+		}
+	}
+	for v, ok := q.Dequeue(); ok; v, ok = q.Dequeue() {
+		toposort = append(toposort, v)
+		updateInDegrees(g, inDegrees, v)
+		toBeQueued := findZeroInDegree(inDegrees)
+		for _, v := range toBeQueued {
+			if done, ok := queued[v]; !ok || !done {
+				queued[v] = true
+				q.Enqueue(v)
+			}
+		}
+	}
+	return toposort
+}
+
+func findZeroInDegree(inDegrees []int) []int {
+	zeros := []int{}
+	for v, d := range inDegrees {
+		if d == 0 {
+			zeros = append(zeros, v)
+		}
+	}
+	return zeros
+}
+
+func updateInDegrees(g datastructures.Graph, inDegrees []int, removed int) {
+	inDegrees[removed] = -1
+	affected := g.Neighbors(removed)
+	for _, v := range affected {
+		if inDegrees[v] != -1 {
+			inDegrees[v]--
+		}
+	}
+}
+
+func SortDFS(g datastructures.Graph) []int {
 	vertices := dfs.Run(g)
 	sorter.Sort(vertices, func(a, b *graphs.Vertex) int {
 		if a.Dist < b.Dist {
@@ -42,5 +100,5 @@ func Demo() {
 	g.AddEdge(5, 7, 1)
 	g.AddEdge(6, 8, 1)
 	g.AddEdge(7, 8, 1)
-	fmt.Println(Sort(g))
+	fmt.Println(SortBFS(g))
 }
