@@ -4,8 +4,10 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-func Sort[T constraints.Ordered](s []T, ascending bool) {
-	mergeSort(s, 0, len(s)-1, ascending)
+func Sort[T constraints.Ordered](s []T, ascending bool) []T {
+	list := append([]T{}, s...)
+	mergeSort(list, 0, len(list)-1, ascending)
+	return list
 }
 
 func mergeSort[T constraints.Ordered](s []T, p, r int, ascending bool) {

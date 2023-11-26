@@ -95,9 +95,9 @@ func (t *Tree[T]) Search(n *Node[T], v T) (*Node[T], bool) {
 	node := n
 	for node != t.null {
 		switch result := t.compare(v, node.value); result {
-		case -1:
+		case comparator.Lesser:
 			return t.Search(node.left, v)
-		case 1:
+		case comparator.Greater:
 			return t.Search(node.right, v)
 		default:
 			return node, true
@@ -115,7 +115,7 @@ func (t *Tree[T]) Insert(v T) {
 	for currentNode != t.null {
 		parent = currentNode
 		switch t.compare(newNode.value, currentNode.value) {
-		case -1:
+		case comparator.Lesser:
 			currentNode = currentNode.left
 		default:
 			currentNode = currentNode.right
@@ -201,7 +201,7 @@ func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 			uncle = node.parent.parent.right
 			switch uncle.color {
 			case red:
-				// case 1
+				// case comparator.Greater
 				node.parent.color = black
 				uncle.color = black
 				node.parent.parent.color = red
@@ -221,7 +221,7 @@ func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 			uncle = node.parent.parent.left
 			switch uncle.color {
 			case red:
-				// case 1
+				// case comparator.Greater
 				node.parent.color = black
 				uncle.color = black
 				node.parent.parent.color = red
@@ -253,7 +253,7 @@ func (t *Tree[T]) fixPostRemove(n *Node[T]) {
 			switch n {
 			case parent.left:
 				sibling := parent.right
-				// case 1
+				// case comparator.Greater
 				if sibling.color == red {
 					sibling.color = black
 					parent.color = red
@@ -281,7 +281,7 @@ func (t *Tree[T]) fixPostRemove(n *Node[T]) {
 				}
 			case parent.right:
 				sibling := parent.left
-				// case 1
+				// case comparator.Greater
 				if sibling.color == red {
 					sibling.color = black
 					parent.color = red

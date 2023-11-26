@@ -96,9 +96,9 @@ func (n *Node[T]) insert(tree *Tree[T], v T) *Node[T] {
 	}
 
 	switch result := tree.compare(v, n.value); result {
-	case -1:
+	case comparator.Lesser:
 		n.left = n.left.insert(tree, v)
-	case 1:
+	case comparator.Greater:
 		n.right = n.right.insert(tree, v)
 	}
 	return n.balance()
@@ -109,9 +109,9 @@ func (n *Node[T]) remove(tree *Tree[T], v T) *Node[T] {
 		return nil
 	}
 	switch result := tree.compare(v, n.value); result {
-	case -1:
+	case comparator.Lesser:
 		n.left = n.left.remove(tree, v)
-	case 1:
+	case comparator.Greater:
 		n.right = n.right.remove(tree, v)
 	default:
 		if n.left == nil {
