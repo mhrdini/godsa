@@ -27,7 +27,7 @@ func recursiveRun(g datastructures.Graph) []*graphs.Vertex {
 }
 
 func Visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) {
-	*time++
+	// *time++
 	discovered := vertices[u]
 	discovered.Color = graphs.Gray
 	for _, v := range g.Neighbors(discovered.Value) {
@@ -37,9 +37,26 @@ func Visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) 
 			Visit(g, vertices, v, time)
 		}
 	}
-	*time++
 	discovered.Color = graphs.Black
 	discovered.Dist = float64(*time)
+	fmt.Println(discovered)
+}
+
+func Demo() {
+	g := adjacencylist.New(datastructures.Options{
+		TotalVertices: 8,
+		Undirected:    false,
+	})
+	g.AddEdge(0, 1, 1)
+	g.AddEdge(0, 2, 1)
+	g.AddEdge(1, 2, 1)
+	g.AddEdge(1, 3, 1)
+	g.AddEdge(2, 3, 1)
+	g.AddEdge(2, 5, 1)
+	g.AddEdge(3, 4, 1)
+	g.AddEdge(7, 6, 1)
+
+	Run(g)
 }
 
 func Demo1() {
@@ -56,21 +73,4 @@ func Demo1() {
 	g.AddEdge(4, 3, 1)
 	g.AddEdge(5, 5, 1)
 	Run(g)
-}
-
-func Demo2() {
-	g := adjacencylist.New(datastructures.Options{
-		TotalVertices: 9,
-		Undirected:    false,
-	})
-	g.AddEdge(0, 3, 1)
-	g.AddEdge(1, 2, 1)
-	g.AddEdge(1, 3, 1)
-	g.AddEdge(2, 3, 1)
-	g.AddEdge(2, 6, 1)
-	g.AddEdge(5, 6, 1)
-	g.AddEdge(5, 7, 1)
-	g.AddEdge(6, 8, 1)
-	g.AddEdge(7, 8, 1)
-	fmt.Println(Run(g))
 }

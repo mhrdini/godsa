@@ -9,6 +9,7 @@ import (
 
 const adjacencyList = "AdjacencyList"
 
+// assumes a maximum of one edge between vertices in an undirected graph
 type Graph struct {
 	totalEdges uint32                          // size of a graph
 	list       []*singlylinkedlist.List[*edge] // adjacency lists
@@ -168,7 +169,7 @@ func (g *Graph) RemoveEdge(src, dst int) bool {
 func (g *Graph) hasEdges(src, dst int) ([]int, bool) {
 	totalVertices := len(g.list)
 	idxs := make([]int, 2)
-	var directed, undirected bool
+	var directed, undirected bool // boolean checks for whether there are directed or undirected edges between src and dst
 
 	if src < totalVertices && dst < totalVertices && g.list[src] != nil && g.list[dst] != nil {
 		edgesFromSrc := g.list[src].Values()

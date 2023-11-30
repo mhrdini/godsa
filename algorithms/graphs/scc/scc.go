@@ -8,6 +8,7 @@ import (
 	datastructures "github.com/mhrdini/godsa/datastructures/graphs"
 	"github.com/mhrdini/godsa/datastructures/graphs/adjacencylist"
 	"github.com/mhrdini/godsa/datastructures/stacks/linkedliststack"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
@@ -15,11 +16,11 @@ func Run(g datastructures.Graph) [][]int {
 	vertices := dfs.Run(g)
 	sorter.Sort(vertices, func(a, b *graphs.Vertex) int {
 		if a.Dist < b.Dist {
-			return 1
+			return comparator.Greater
 		} else if a.Dist == b.Dist {
-			return 0
+			return comparator.Equal
 		} else {
-			return -1
+			return comparator.Lesser
 		}
 	})
 

@@ -114,7 +114,7 @@ func (h *Heap[T]) rightify() {
 		if ok {
 			sibling := child + 1
 			siblingValue, ok := h.list.Get(sibling)
-			if ok && h.compare(siblingValue, childValue) == -1 {
+			if ok && h.compare(siblingValue, childValue) == comparator.Lesser {
 				h.list.Swap(child, sibling)
 				h.siftDown(child)
 				h.siftDown(sibling)
@@ -131,12 +131,12 @@ func (h *Heap[T]) siftDown(parent int) {
 		sibling := child + 1
 		siblingValue, ok := h.list.Get(sibling)
 
-		if ok && h.minHeap && h.compare(siblingValue, childValue) == -1 || !h.minHeap && h.compare(siblingValue, childValue) == 1 {
+		if ok && h.minHeap && h.compare(siblingValue, childValue) == comparator.Lesser || !h.minHeap && h.compare(siblingValue, childValue) == comparator.Greater {
 			child = sibling
 			childValue = siblingValue
 		}
 		parentValue, ok := h.list.Get(parent)
-		if ok && h.minHeap && h.compare(parentValue, childValue) == 1 || !h.minHeap && h.compare(parentValue, childValue) == -1 {
+		if ok && h.minHeap && h.compare(parentValue, childValue) == comparator.Greater || !h.minHeap && h.compare(parentValue, childValue) == comparator.Lesser {
 			h.list.Swap(parent, child)
 			h.siftDown(child)
 		}

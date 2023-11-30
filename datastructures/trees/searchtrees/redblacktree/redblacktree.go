@@ -106,11 +106,14 @@ func (t *Tree[T]) Search(n *Node[T], v T) (*Node[T], bool) {
 	return t.null, false
 }
 
+// Insert receives a value and creates a new red node out of it. It finds and inserts it
+// into an initial position, and then uses the fixPostInsert function to correct the tree
+// and fix violations against the RBT rules.
 func (t *Tree[T]) Insert(v T) {
 	newNode := &Node[T]{v, red, t.null, t.null, t.null}
 
 	currentNode := t.root
-	parent := t.null // parent will be the parent of z
+	parent := t.null // parent will be the parent of newNode
 
 	for currentNode != t.null {
 		parent = currentNode
@@ -128,12 +131,13 @@ func (t *Tree[T]) Insert(v T) {
 
 	if parent == t.null {
 		t.root = newNode
-	} else if t.compare(newNode.value, parent.value) == -1 {
+	} else if t.compare(newNode.value, parent.value) == comparator.Lesser {
 		parent.left = newNode
 	} else {
 		parent.right = newNode
 	}
 
+	// case 0: new node is the root, so color it black
 	if newNode.parent == t.null {
 		newNode.color = black
 		return
@@ -157,15 +161,15 @@ func (t *Tree[T]) Remove(v T) {
 		successor := removed
 		successorColor := successor.color
 
-		// if left subtree of removed node is nil
+		// case 1: if left subtree of removed node is nil
 		if removed.left == t.null {
 			replacement = removed.right
 			t.transplant(removed, replacement)
-			// if right subtree of removed node is nil
+			// case 2: if right subtree of removed node is nil
 		} else if removed.right == t.null {
 			replacement = removed.left
 			t.transplant(removed, replacement)
-			// if neither subtree of removed node is nil
+			// case 3: if neither subtree of removed node is nil
 		} else {
 			successor = t.minimum(removed.right)
 			successorColor = successor.color
@@ -190,6 +194,17 @@ func (t *Tree[T]) Remove(v T) {
 	}
 }
 
+// fixPostInsert fixes violations in the RBT after the insertion of a node N by identifying 3 cases:
+// - Case 1 -> Where the uncle node of N is red
+// - Case 2 -> Where the uncle node of N is black, and either N is a left child and its parent is a
+// right child or vice versa (forming a triangle)
+// - Case 3 -> Where the uncle node of N is black, and either both N and its parent are right
+// xchildren or both are left children (forming a line)
+// The fix for each case is as follows:
+// - Case 1 -> Recolour N's parent and uncle black, and recolour N's grandparent red
+// - Case 2 -> Rotate N's parent in the opposite direction of N so that N takes the place of its parent
+// - Case 3 -> Rotate N's grandparent in the opposite direction of N so that N's parent takes the
+// place of its grandparent, then recolor N's original parent and grandparent
 func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 
 	node := n
@@ -201,7 +216,7 @@ func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 			uncle = node.parent.parent.right
 			switch uncle.color {
 			case red:
-				// case comparator.Greater
+				// case 1
 				node.parent.color = black
 				uncle.color = black
 				node.parent.parent.color = red
@@ -221,7 +236,7 @@ func (t *Tree[T]) fixPostInsert(n *Node[T]) {
 			uncle = node.parent.parent.left
 			switch uncle.color {
 			case red:
-				// case comparator.Greater
+				// case 1
 				node.parent.color = black
 				uncle.color = black
 				node.parent.parent.color = red
@@ -351,6 +366,10 @@ func (t *Tree[T]) rightRotate(n *Node[T]) {
 	n.parent = newRoot
 }
 
+// transplant is called by the Remove function to move subtrees, specifically in replacing the original
+// node with the replacement node, whereby the replacement node becomes the original node's parent's
+// new child. Note that other updates with respect to the original node's other children (which may
+// have been affected by the current transplant function) are the responsibility of the calling function.
 func (t *Tree[T]) transplant(original, replacement *Node[T]) {
 
 	if original.parent == t.null {
