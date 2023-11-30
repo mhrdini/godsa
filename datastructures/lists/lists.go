@@ -15,5 +15,6 @@ type List[T any] interface {
 	Get(i int) (T, bool)
 	Set(i int, v T) bool
 	Swap(i, j int) bool
+	// IndexOf(v T) (int, bool)
 	// TODO: Concat(vs ...*List[T])
 }

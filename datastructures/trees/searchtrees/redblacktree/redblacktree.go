@@ -9,11 +9,11 @@ import (
 
 const redBlackTree = "RedBlackTree"
 
-type color bool
+type color int
 
 const (
-	red   = color(true)
-	black = color(false)
+	red = color(iota)
+	black
 )
 
 type Tree[T any] struct {
