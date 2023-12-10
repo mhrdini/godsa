@@ -27,7 +27,7 @@ func recursiveRun(g datastructures.Graph) []*graphs.Vertex {
 }
 
 func Visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) {
-	// *time++
+	*time++
 	discovered := vertices[u]
 	discovered.Color = graphs.Gray
 	for _, v := range g.Neighbors(discovered.Value) {
@@ -37,6 +37,7 @@ func Visit(g datastructures.Graph, vertices []*graphs.Vertex, u int, time *int) 
 			Visit(g, vertices, v, time)
 		}
 	}
+	*time++
 	discovered.Color = graphs.Black
 	discovered.Dist = float64(*time)
 	fmt.Println(discovered)

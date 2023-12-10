@@ -12,6 +12,8 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
+// Strongly Connected Components
+
 func Run(g datastructures.Graph) [][]int {
 	vertices := dfs.Run(g)
 	sorter.Sort(vertices, func(a, b *graphs.Vertex) int {

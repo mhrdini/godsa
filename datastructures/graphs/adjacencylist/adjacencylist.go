@@ -73,6 +73,7 @@ func (g *Graph) Neighbors(v int) []int {
 	return vs
 }
 
+// Reverses the direction of all edges in the same graph
 func (g *Graph) Transpose() graphs.Graph {
 	if !g.undirected {
 		list := emptyList(len(g.list))
