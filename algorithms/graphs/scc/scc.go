@@ -12,10 +12,10 @@ import (
 	"github.com/mhrdini/godsa/datastructures/utils/sorter"
 )
 
-// Strongly Connected Components
+// Strongly Connected Components using Kosaraju's Algorithm
 
 func Run(g datastructures.Graph) [][]int {
-	vertices := dfs.Run(g)
+	vertices := dfs.Run(g, g.Values()[0])
 	sorter.Sort(vertices, func(a, b *graphs.Vertex) int {
 		if a.Dist < b.Dist {
 			return comparator.Greater
