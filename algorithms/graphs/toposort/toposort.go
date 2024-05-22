@@ -14,6 +14,8 @@ import (
 )
 
 func SortBFS(g datastructures.Graph) []int {
+	fmt.Println("Running Topological Sort using BFS...")
+
 	inDegrees := make([]int, g.Size())
 	for i := 0; i < g.Size(); i++ {
 		for _, e := range g.Neighbors(i) {
@@ -71,7 +73,20 @@ func updateInDegrees(g datastructures.Graph, inDegrees []int, removed int) {
 }
 
 func SortDFS(g datastructures.Graph) []int {
-	vertices := dfs.Run(g)
+	fmt.Println("Running Topological Sort using DFS...")
+
+	vertices := make([]*graphs.Vertex, g.Size())
+	for i := 0; i < g.Size(); i++ {
+		vertices[i] = &graphs.Vertex{Color: graphs.White, Value: i, Parent: nil}
+	}
+
+	time := 0
+	for i := 0; i < g.Size(); i++ {
+		if vertices[i].Color == graphs.White {
+			dfs.Visit(g, vertices, i, &time)
+		}
+	}
+
 	sorter.Sort(vertices, func(a, b *graphs.Vertex) int {
 		if a.Dist < b.Dist {
 			return 1
@@ -81,12 +96,30 @@ func SortDFS(g datastructures.Graph) []int {
 			return -1
 		}
 	})
-	return helpers.Map(vertices, func(v *graphs.Vertex) int {
+	result := helpers.Map(vertices, func(v *graphs.Vertex) int {
 		return v.Value
 	})
+	return result
 }
 
-func Demo() {
+func DemoDFS() {
+	g := adjacencylist.New(datastructures.Options{
+		TotalVertices: 9,
+		Undirected:    false,
+	})
+	g.AddEdge(0, 3, 1)
+	g.AddEdge(1, 2, 1)
+	g.AddEdge(1, 3, 1)
+	g.AddEdge(2, 3, 1)
+	g.AddEdge(2, 6, 1)
+	g.AddEdge(5, 6, 1)
+	g.AddEdge(5, 7, 1)
+	g.AddEdge(6, 8, 1)
+	g.AddEdge(7, 8, 1)
+	fmt.Println(SortDFS(g))
+}
+
+func DemoBFS() {
 	g := adjacencylist.New(datastructures.Options{
 		TotalVertices: 9,
 		Undirected:    false,
