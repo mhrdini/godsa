@@ -46,7 +46,13 @@ func (g *Graph) Values() []int {
 }
 
 func (g *Graph) String() string {
-	return fmt.Sprintf("%v", g.matrix)
+	str := ""
+
+	for i := range g.matrix {
+		str += fmt.Sprintf("%0v: %v\n", i, g.matrix[i])
+	}
+
+	return str
 }
 
 func (g *Graph) Reset() {

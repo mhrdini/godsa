@@ -11,6 +11,8 @@ import (
 )
 
 func Run(g datastructures.Graph, src int) []*graphs.Vertex {
+	fmt.Printf("Running BFS on the following graph:\n%v\n\n", g)
+
 	vertices := make([]*graphs.Vertex, g.Size())
 	for i := 0; i < g.Size(); i++ {
 		vertices[i] = &graphs.Vertex{Color: graphs.White, Value: i, Dist: math.Inf(1), Parent: nil}
@@ -43,6 +45,7 @@ func Demo() {
 		TotalVertices: 8,
 		Undirected:    false,
 	})
+	// CP3 4.4 DAG in visualgo.net
 	g.AddEdge(0, 1, 1)
 	g.AddEdge(0, 2, 1)
 	g.AddEdge(1, 2, 1)
@@ -52,5 +55,40 @@ func Demo() {
 	g.AddEdge(3, 4, 1)
 	g.AddEdge(7, 6, 1)
 
+	Run(g, 0)
+}
+
+func Demo1() {
+	g := adjacencylist.New(datastructures.Options{
+		TotalVertices: 8,
+		Undirected:    false,
+	})
+	// CP3 4.9 in visualgo.net
+	g.AddEdge(0, 1, 1)
+	g.AddEdge(1, 3, 1)
+	g.AddEdge(2, 1, 1)
+	g.AddEdge(3, 2, 1)
+	g.AddEdge(3, 4, 1)
+	g.AddEdge(4, 5, 1)
+	g.AddEdge(5, 7, 1)
+	g.AddEdge(6, 4, 1)
+	g.AddEdge(7, 6, 1)
+	Run(g, 0)
+}
+
+func Demo2() {
+	g := adjacencylist.New(datastructures.Options{
+		TotalVertices: 5,
+		Undirected:    false,
+	})
+	// CP3 4.17 DAG in visualgo.net
+	g.AddEdge(0, 1, 1)
+	g.AddEdge(0, 2, 1)
+	g.AddEdge(0, 3, 1)
+	g.AddEdge(1, 3, 1)
+	g.AddEdge(1, 4, 1)
+	g.AddEdge(2, 0, 1)
+	g.AddEdge(2, 4, 1)
+	g.AddEdge(3, 4, 1)
 	Run(g, 0)
 }

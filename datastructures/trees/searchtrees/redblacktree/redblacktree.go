@@ -199,7 +199,7 @@ func (t *Tree[T]) Remove(v T) {
 // - Case 2 -> Where the uncle node of N is black, and either N is a left child and its parent is a
 // right child or vice versa (forming a triangle)
 // - Case 3 -> Where the uncle node of N is black, and either both N and its parent are right
-// xchildren or both are left children (forming a line)
+// children or both are left children (forming a line)
 // The fix for each case is as follows:
 // - Case 1 -> Recolour N's parent and uncle black, and recolour N's grandparent red
 // - Case 2 -> Rotate N's parent in the opposite direction of N so that N takes the place of its parent
@@ -268,7 +268,7 @@ func (t *Tree[T]) fixPostRemove(n *Node[T]) {
 			switch n {
 			case parent.left:
 				sibling := parent.right
-				// case comparator.Greater
+				// case 1
 				if sibling.color == red {
 					sibling.color = black
 					parent.color = red
@@ -296,7 +296,7 @@ func (t *Tree[T]) fixPostRemove(n *Node[T]) {
 				}
 			case parent.right:
 				sibling := parent.left
-				// case comparator.Greater
+				// case 1
 				if sibling.color == red {
 					sibling.color = black
 					parent.color = red

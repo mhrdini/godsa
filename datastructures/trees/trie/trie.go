@@ -47,10 +47,8 @@ func (t *Trie) String() string {
 }
 
 func (t *Trie) Reset() {
-	t = &Trie{
-		root: nil,
-		size: 0,
-	}
+	t.root = nil
+	t.size = 0
 }
 
 func (n *TrieNode) Value() (value string, ok bool) {
@@ -168,9 +166,12 @@ func (t *Trie) Autocorrect(word string) (suggestions []string) {
 	prefix := word
 	suffixes := t.Autocomplete(word)
 	for len(suffixes) == 0 {
-		// fmt.Printf("word: %v suffixes: %v\n", word, suffixes)
-		prefix = prefix[:len(word)-1]
-		suffixes = t.Autocomplete(word)
+		if len(prefix) == 1 {
+			break
+		}
+		// fmt.Printf("prefix: %v suffixes: %v\n", prefix, suffixes)
+		prefix = prefix[:len(prefix)-1]
+		suffixes = t.Autocomplete(prefix)
 	}
 	for _, suffix := range suffixes {
 		suggestions = append(suggestions, prefix+suffix)
@@ -207,6 +208,6 @@ func DemoAutocomplete() {
 
 func DemoAutocorrect() {
 	t := newDemoTrie()
-	words := t.Autocorrect("catnar")
+	words := t.Autocorrect("catniarpp")
 	fmt.Println(words)
 }

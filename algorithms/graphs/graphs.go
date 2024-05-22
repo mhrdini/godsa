@@ -33,8 +33,8 @@ type Vertex struct {
 func (v *Vertex) String() string {
 	switch v.Parent {
 	case nil:
-		return fmt.Sprintf("[%v %v %v -1]", v.Value, v.Color, v.Dist)
+		return fmt.Sprintf("[v:%v %v d:%v p:-1]", v.Value, v.Color, v.Dist)
 	default:
-		return fmt.Sprintf("[%v %v %v %v]", v.Value, v.Color, v.Dist, v.Parent.Value)
+		return fmt.Sprintf("[v:%v %v d:%v p:%v]", v.Value, v.Color, v.Dist, v.Parent.Value)
 	}
 }

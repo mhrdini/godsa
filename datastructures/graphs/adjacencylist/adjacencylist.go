@@ -30,6 +30,10 @@ func New(o graphs.Options) graphs.Graph {
 	}
 }
 
+func (e *edge) String() string {
+	return fmt.Sprintf("(%v --%v-> %v)", e.src, e.weight, e.dst)
+}
+
 func (g *Graph) Name() string {
 	return adjacencyList
 }
@@ -51,8 +55,8 @@ func (g *Graph) Values() []int {
 }
 
 func (g *Graph) String() string {
-	// return fmt.Sprintf("total edges: %v, total vertices: %v, undirected: %v\n%v", g.totalEdges, len(g.list), g.undirected, g.list)
-	return fmt.Sprintf("%v", g.list)
+	return fmt.Sprintf("total edges: %v, total vertices: %v, undirected: %v\n%v", g.totalEdges, len(g.list), g.undirected, g.list)
+	// return fmt.Sprintf("%v", g.list)
 }
 
 func (g *Graph) Reset() {
@@ -199,10 +203,6 @@ func (g *Graph) hasEdges(src, dst int) ([]int, bool) {
 		}
 	}
 	return idxs, g.undirected && directed && undirected || directed
-}
-
-func (e *edge) String() string {
-	return fmt.Sprintf("(%v, %v, %v)", e.src, e.dst, e.weight)
 }
 
 func (g *Graph) withinRange(v int) bool {
