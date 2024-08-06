@@ -6,8 +6,10 @@ import (
 	"github.com/mhrdini/godsa/datastructures/graphs"
 )
 
-const adjacencyMatrix = "AdjacencyMatrix"
-const zeroWeight = 0
+const (
+	adjacencyMatrix = "AdjacencyMatrix"
+	zeroWeight      = 0
+)
 
 type Graph struct {
 	totalVertices uint32 // order of a graph

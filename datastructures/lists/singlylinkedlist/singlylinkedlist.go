@@ -11,12 +11,24 @@ const singlyLinkedList = "SinglyLinkedList"
 
 type List[T any] struct {
 	size int
-	head *node[T]
-	tail *node[T]
+	head *Node[T]
+	tail *Node[T]
 }
-type node[T any] struct {
+type Node[T any] struct {
 	value T
-	next  *node[T]
+	next  *Node[T]
+}
+
+func (n *Node[T]) Value() T {
+	return n.value
+}
+
+func (n *Node[T]) Next() *Node[T] {
+	return n.next
+}
+
+func (n *Node[T]) Empty() bool {
+	return n == nil
 }
 
 // New receives a variadic input of values whose type are T.
@@ -78,7 +90,7 @@ func (l *List[T]) Add(vs ...T) bool {
 	}
 
 	for _, v := range vs {
-		newNode := &node[T]{
+		newNode := &Node[T]{
 			value: v,
 			next:  nil,
 		}
@@ -106,9 +118,9 @@ func (l *List[T]) InsertAt(i int, vs ...T) bool {
 		return l.Add(vs...)
 	}
 
-	var start, end, prev *node[T]
+	var start, end, prev *Node[T]
 	for idx, v := range vs {
-		newNode := &node[T]{
+		newNode := &Node[T]{
 			value: v,
 			next:  nil,
 		}
@@ -167,7 +179,7 @@ func (l *List[T]) Append(vs ...T) bool {
 func (l *List[T]) Remove(i int) (T, bool) {
 	var value T
 
-	if l.Empty() || i < 0 || i >= l.size {
+	if l.Empty() || !l.withinRange(i) {
 		return value, false
 	}
 
@@ -181,7 +193,7 @@ func (l *List[T]) Remove(i int) (T, bool) {
 			l.head = l.head.next
 		}
 	default:
-		var prev *node[T]
+		var prev *Node[T]
 		for curr, pos := l.head, 0; curr != nil && pos <= i; curr, pos = curr.next, pos+1 {
 			if pos == i {
 				value = curr.value

@@ -18,3 +18,9 @@ type List[T any] interface {
 	// IndexOf(v T) (int, bool)
 	// TODO: Concat(vs ...*List[T])
 }
+
+type Node[T any] interface {
+	Value() T
+	Next() Node[T]
+	Empty() bool
+}

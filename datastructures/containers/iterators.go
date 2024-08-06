@@ -3,9 +3,9 @@ package containers
 type Iterator[T any] interface {
 	Next() (T, bool)
 	Value() (T, bool)
+	Reset()
 	// HasNext() bool
 	// Prev() T
-	// Reset()
 }
 
 type IteratorWithIndex[T any] interface {

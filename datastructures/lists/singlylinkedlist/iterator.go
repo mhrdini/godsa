@@ -10,29 +10,31 @@ const (
 )
 
 type Iterator[T any] struct {
-	list    *List[T]
-	index   int
-	current *node[T]
+	originalList *List[T]
+	list         *List[T]
+	index        int
+	current      *Node[T]
 }
 
-func (l *List[T]) NewIterator() containers.Iterator[T] {
+func (l *List[T]) NewIterator() containers.IteratorWithIndex[*Node[T]] {
 	return &Iterator[T]{
-		list:    l,
-		index:   NilIndex,
-		current: nil,
+		originalList: l,
+		list:         l,
+		index:        NilIndex,
+		current:      nil,
 	}
 }
 
-func (i *Iterator[T]) Next() (result T, ok bool) {
+func (i *Iterator[T]) Next() (result *Node[T], ok bool) {
 	if i.current == nil && i.index == NilIndex && i.list.size > 0 {
 		i.current = i.list.head
 		i.index = ZeroIndex
-		result = i.current.value
+		result = i.current
 		ok = true
-	} else if i.current.next != nil {
+	} else if i.current != nil && i.current.next != nil {
 		i.current = i.current.next
 		i.index++
-		result = i.current.value
+		result = i.current
 		ok = true
 	}
 	return
@@ -42,9 +44,15 @@ func (i *Iterator[T]) Index() int {
 	return i.index
 }
 
-func (i *Iterator[T]) Value() (result T, ok bool) {
+func (i *Iterator[T]) Value() (result *Node[T], ok bool) {
 	if i.current != nil {
-		result, ok = i.current.value, true
+		result, ok = i.current, true
 	}
 	return
+}
+
+func (i *Iterator[T]) Reset() {
+	i.list = i.originalList
+	i.index = NilIndex
+	i.current = nil
 }
