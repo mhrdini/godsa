@@ -1,6 +1,8 @@
 package trees
 
 import (
+	"fmt"
+
 	"github.com/mhrdini/godsa/datastructures/containers"
 	"github.com/mhrdini/godsa/datastructures/queues/linkedlistqueue"
 )
@@ -60,6 +62,7 @@ func LevelOrder[T any](n INode[T], ch chan T) {
 	for !queue.Empty() {
 		node, _ := queue.Dequeue()
 		if value, ok := node.Value(); ok {
+			fmt.Println(value, node.Children())
 			ch <- value
 			for _, child := range node.Children() {
 				if !child.IsNil() {

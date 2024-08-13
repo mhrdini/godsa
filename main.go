@@ -1,14 +1,25 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/mhrdini/godsa/datastructures/lists/singlylinkedlist"
-	linkedlists "github.com/mhrdini/godsa/problems/ctci/2_linkedlists"
+	"github.com/mhrdini/godsa/datastructures/trees/heaps/binomialheap"
+	"github.com/mhrdini/godsa/datastructures/utils/comparator"
 )
 
 func main() {
-	list := singlylinkedlist.New("a", "b", "c", "d", "e", "c")
-	linkedlists.DeleteMiddleNode(list, "c")
-	fmt.Println(list)
+	h := binomialheap.MinHeap(comparator.OrderedComparator[int], 3)
+	h.Insert(183)
+	h.Insert(95)
+	h.Insert(117)
+	h.Insert(44)
+
+	// h.Insert(5)
+	// h.Insert(3)
+	// h.Insert(6)
+	// h.Insert(4)
+	// h.Insert(8)
+
+	// h.Insert(2)
+	// h.Insert(1)
+	// h.Insert(6)
+	// fmt.Println(h.Root())
 }

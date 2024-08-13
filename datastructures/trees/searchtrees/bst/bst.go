@@ -42,7 +42,7 @@ func (t *Tree[T]) Empty() bool {
 }
 
 func (t *Tree[T]) Values() []T {
-	return trees.Traverse(trees.ITree[T](t), trees.InOrder[T])
+	return trees.Traverse(trees.ITree[T](t), trees.LevelOrder[T])
 }
 
 func (t *Tree[T]) String() string {

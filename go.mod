@@ -1,5 +1,5 @@
 module github.com/mhrdini/godsa
 
-go 1.20
+go 1.22.5
 
-require golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
+require golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56

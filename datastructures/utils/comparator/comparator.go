@@ -14,12 +14,13 @@ const (
 // - if x > y: return 1
 type Comparator[C any] func(x, y C) int
 
+// Instantiate by calling comparator.OrderedComparator[T] where T is an Ordered type
 func OrderedComparator[C constraints.Ordered](x, y C) int {
 	if x < y {
-		return -1
+		return Lesser
 	} else if x == y {
-		return 0
+		return Equal
 	} else {
-		return 1
+		return Greater
 	}
 }
