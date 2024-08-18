@@ -133,15 +133,18 @@ func (h *BinomialHeap[T]) Size() int {
 }
 
 func (h *BinomialHeap[T]) Empty() bool {
-	return h.size == 0
+	return h.head == nil
 }
 
 func (h *BinomialHeap[T]) Values() []T {
+	if h.head == nil {
+		return []T{}
+	}
 	return trees.Traverse(trees.ITree[T](h), trees.LevelOrder[T])
 }
 
 func (h *BinomialHeap[T]) String() string {
-	return fmt.Sprintf("%v", h.Values())
+	return fmt.Sprintf("\nValues: %v\nMin Heap? %v\nMin/Max Root: %v\nMin/Max Value: %v\n", h.Values(), h.minHeap, h.minOrMaxRoot, h.minOrMaxValue)
 }
 
 func (h *BinomialHeap[T]) Reset() {
@@ -182,6 +185,56 @@ func (n *BinomialNode[T]) String() string {
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                 EXTRACTION                                 */
+/* -------------------------------------------------------------------------- */
+
+func (h *BinomialHeap[T]) Extract() *BinomialNode[T] {
+	// remove min/max root from h
+	var prevOfMinMaxRoot, curr *BinomialNode[T]
+	curr = h.head
+	for curr != nil {
+		if curr == h.minOrMaxRoot {
+			h.head = curr.sibling
+		} else if curr.sibling == h.minOrMaxRoot {
+			prevOfMinMaxRoot = curr
+			prevOfMinMaxRoot.sibling = h.minOrMaxRoot.sibling
+		}
+		curr = curr.sibling
+	}
+	if h.head == curr && curr == h.minOrMaxRoot {
+		h.head = nil
+	}
+
+	extracted := h.minOrMaxRoot
+	h.size--
+
+	// make new empty heap, h'
+	hPrime := NewEmptyHeap(h.minHeap, h.compare, h.minOrMaxValue)
+
+	// reverse order of linked list of children of removed min/max root
+	// set head of h' as first of reverse linked list
+	var next *BinomialNode[T]
+	curr = extracted.child
+
+	for curr != nil {
+		curr.parent = nil
+		next = curr.sibling
+		if hPrime.head == nil {
+			curr.sibling = nil
+		} else {
+			curr.sibling = hPrime.head
+		}
+		hPrime.head = curr
+		curr = next
+	}
+
+	// union h and h'
+	h.head, h.size, h.minOrMaxRoot, h.minOrMaxValue = union(h, hPrime)
+
+	return extracted
+}
+
+/* -------------------------------------------------------------------------- */
 /*                             INSERTION/DELETION                             */
 /* -------------------------------------------------------------------------- */
 
@@ -206,12 +259,10 @@ func (h *BinomialHeap[T]) Insert(v T) {
 	}
 
 	hPrime.head = NewNode(v)
+	hPrime.minOrMaxRoot = hPrime.head
 	hPrime.size++
 
-	//	fmt.Printf("/* -------------------------------------------------------------------------- */\n\n")
-	//	fmt.Printf("Inserting %v ...\n\n", v)
 	h.head, h.size, h.minOrMaxRoot, h.minOrMaxValue = union(h, hPrime)
-	// fmt.Printf("%v\n\n", h)
 }
 
 func (h *BinomialHeap[T]) Remove(v T) {
@@ -227,7 +278,6 @@ func merge[T any](h1, h2 *BinomialHeap[T]) *BinomialNode[T] {
 	if h1 == nil || h1.head == nil {
 		return h2.head
 	}
-
 	if h2 == nil || h2.head == nil {
 		return h1.head
 	}
@@ -246,7 +296,6 @@ func merge[T any](h1, h2 *BinomialHeap[T]) *BinomialNode[T] {
 
 	no := 0
 	curr := head
-	//	fmt.Printf("%v\tcurr: %v\ta: %v\tb: %v\n", no, curr, a, b)
 
 	for a != nil && b != nil {
 		no++
@@ -258,7 +307,6 @@ func merge[T any](h1, h2 *BinomialHeap[T]) *BinomialNode[T] {
 			b = b.sibling
 		}
 		curr = curr.sibling
-		//	fmt.Printf("%v\tcurr: %v\ta: %v\tb: %v\n", no, curr, a, b)
 	}
 
 	if a != nil {
@@ -267,44 +315,8 @@ func merge[T any](h1, h2 *BinomialHeap[T]) *BinomialNode[T] {
 		curr.sibling = b
 	}
 
-	//	fmt.Printf("END\thead: %v\ta: %v\tb: %v\n\n", head, a, b)
-
 	return head
 }
-
-// func merge[T any](h1, h2 *BinomialHeap[T]) *BinomialNode[T] {
-// 	var root *BinomialNode[T] = nil
-// 	var pos **BinomialNode[T] = &root
-
-// 	a := h1.head
-// 	b := h2.head
-
-// 	no := 0
-// //	fmt.Printf("%v\t*pos: %v\ta: %v\tb: %v\n", no, *pos, a, b)
-
-// 	for a != nil && b != nil {
-// 		if a.degree < b.degree {
-// 			*pos = a
-// 			a = a.sibling
-// 		} else {
-// 			*pos = b
-// 			b = b.sibling
-// 		}
-
-// 		no++
-// 	//	fmt.Printf("%v\t*pos: %v\ta: %v\tb: %v\n", no, *pos, a, b)
-// 	}
-
-// 	if a != nil {
-// 		*pos = a
-// 	} else {
-// 		*pos = b
-// 	}
-
-// //	fmt.Printf("END\t*pos: %v\ta: %v\tb: %v\n\n", *pos, a, b)
-
-// 	return root
-// }
 
 // Links a B_(k-1) tree rooted at node y to the B_k-1 tree rooted at node z, i.e.
 // make z the parent of y. Thus, z becomes the root of a B_k tree.
@@ -363,7 +375,7 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 
 	//	fmt.Printf("union PRE\th1: %v\th2: %v\n\n", h1.head, h2.head)
 
-	newMinOrMaxValue := getMinOrMax(h1.minHeap, h1.compare, h1.minOrMaxValue, h2.minOrMaxValue)
+	newMinOrMaxValue := getMinOrMaxValue(h1.minHeap, h1.compare, h1.minOrMaxValue, h2.minOrMaxValue)
 	h := NewEmptyHeap(h1.minHeap, h1.compare, newMinOrMaxValue)
 	// first phase
 	h.size = h1.size + h2.size
@@ -379,11 +391,14 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 	curr = h.head
 	next = curr.sibling
 
-	//	fmt.Printf("%v -> PRE\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
+	h.minOrMaxRoot = h.head
+	h.minOrMaxValue = h.head.value
 	for next != nil {
 		no++
+		//	fmt.Printf("%v -> PRE\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
 		// cases 1 + 2
 		if curr.degree != next.degree || next.sibling != nil && next.sibling.degree == curr.degree {
+			updateMinOrMax(h, curr)
 			prev = curr
 			curr = next
 			//	fmt.Printf("%v -> CASES 1 + 2\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
@@ -392,12 +407,14 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 			currComparedToNext := h.compare(curr.value, next.value)
 			//  case 3
 			if (h.minHeap && currComparedToNext != comparator.Greater) || (!h.minHeap && currComparedToNext != comparator.Lesser) {
-				//	fmt.Printf("%v -> PRE LINK CASE 3\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
 				curr.sibling = next.sibling
+				//	fmt.Printf("%v -> PRE LINK CASE 3\n> curr: %v [p %v\tc %v\ts %v]\n> next: %v [p %v\tc %v\ts %v]\n\n", no, curr, curr.parent, curr.child, curr.sibling, next, next.parent, next.child, next.sibling)
 				link(next, curr)
-				//	fmt.Printf("%v -> POST LINK CASE 3\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
+				updateMinOrMax(h, curr)
+				//	fmt.Printf("%v -> POST LINK CASE 3\n> curr: %v [p %v\tc %v\ts %v]\n> next: %v [p %v\tc %v\ts %v]\n\n", no, curr, curr.parent, curr.child, curr.sibling, next, next.parent, next.child, next.sibling)
 				// case 4
 			} else {
+				// fmt.Printf("%v -> PRE CASE 4\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
 				if prev == nil {
 					h.head = next
 				} else {
@@ -405,12 +422,15 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 				}
 				link(curr, next)
 				curr = next
-				//	fmt.Printf("%v -> CASE 4\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
+				updateMinOrMax(h, curr)
+				// fmt.Printf("%v -> POST CASE 4\n> prev: %v\n> curr: %v\n> next: %v\n\n", no, prev, curr, next)
 			}
 		}
 		next = curr.sibling
-		//	fmt.Printf("%v\n\n", h)
 	}
+
+	//	fmt.Println(h.Values())
+
 	head = h.head
 	size = h.size
 	minOrMaxRoot = h.minOrMaxRoot
@@ -422,11 +442,46 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 /*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-func getMinOrMax[T any](minHeap bool, comp comparator.Comparator[T], x, y T) T {
+func getMinOrMaxValue[T any](minHeap bool, comp comparator.Comparator[T], x, y T) T {
 	result := comp(x, y)
 	if minHeap && result == comparator.Lesser || !minHeap && result == comparator.Greater {
 		return x
 	} else {
 		return y
 	}
+}
+
+func updateMinOrMax[T any](h *BinomialHeap[T], n *BinomialNode[T]) (updated bool) {
+	if h == nil {
+		return
+	}
+	result := h.compare(n.value, h.minOrMaxValue)
+	switch h.minHeap {
+	case true:
+		if result == comparator.Lesser {
+			h.minOrMaxRoot = n
+			h.minOrMaxValue = n.value
+			updated = true
+		}
+	case false:
+		if result == comparator.Greater {
+			h.minOrMaxRoot = n
+			h.minOrMaxValue = n.value
+			updated = true
+		}
+	}
+	return
+}
+
+func Demo() {
+	h := MinHeap(comparator.OrderedComparator[int], 32)
+	h.Insert(117)
+	h.Insert(176)
+	h.Insert(48)
+	h.Insert(32)
+	h.Insert(191)
+	h.Insert(123)
+	h.Insert(190)
+	h.Insert(79)
+	fmt.Println(h)
 }
