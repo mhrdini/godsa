@@ -69,37 +69,37 @@ type BinomialNode[T any] struct {
 	sibling *BinomialNode[T]
 }
 
-func MaxHeap[T any](comp comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
+func MaxHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
 	h := &BinomialHeap[T]{
 		head:          nil,
 		minOrMaxRoot:  nil,
 		size:          0,
 		minHeap:       false,
 		minOrMaxValue: minOrMaxValue,
-		compare:       comp,
+		compare:       compare,
 	}
 
 	return h
 }
 
-func MinHeap[T any](comp comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
+func MinHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
 	h := &BinomialHeap[T]{
 		head:          nil,
 		minOrMaxRoot:  nil,
 		size:          0,
 		minHeap:       true,
 		minOrMaxValue: minOrMaxValue,
-		compare:       comp,
+		compare:       compare,
 	}
 
 	return h
 }
 
-func NewEmptyHeap[T any](minHeap bool, comp comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
+func NewEmptyHeap[T any](minHeap bool, compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
 	if minHeap {
-		return MinHeap(comp, minOrMaxValue)
+		return MinHeap(compare, minOrMaxValue)
 	} else {
-		return MaxHeap(comp, minOrMaxValue)
+		return MaxHeap(compare, minOrMaxValue)
 	}
 }
 
@@ -234,15 +234,35 @@ func (h *BinomialHeap[T]) Extract() *BinomialNode[T] {
 	return extracted
 }
 
+func (h *BinomialHeap[T]) Find(v T) *BinomialNode[T] {
+	return h.head.find(h.minHeap, h.compare, v)
+}
+
+func (n *BinomialNode[T]) find(minHeap bool, compare comparator.Comparator[T], v T) *BinomialNode[T] {
+	if n == nil {
+		return nil
+	}
+	result := compare(v, n.value)
+	if result == comparator.Equal {
+		return n
+	}
+	if minHeap && result == comparator.Lesser || !minHeap && result == comparator.Greater {
+		return n.sibling.find(minHeap, compare, v)
+	}
+	if n.sibling != nil {
+		return n.sibling.find(minHeap, compare, v)
+	} else {
+		return n.child.find(minHeap, compare, v)
+	}
+}
+
 /* -------------------------------------------------------------------------- */
 /*                             INSERTION/DELETION                             */
 /* -------------------------------------------------------------------------- */
 
-func (h *BinomialHeap[T]) Insert(v T) *BinomialNode[T] {
-
+func (h *BinomialHeap[T]) Insert(v T) {
 	var hPrime *BinomialHeap[T]
 	var vComparedToSmallestValue = h.compare(v, h.minOrMaxValue)
-
 	switch h.minHeap {
 	case true:
 		if vComparedToSmallestValue == comparator.Lesser {
@@ -257,15 +277,12 @@ func (h *BinomialHeap[T]) Insert(v T) *BinomialNode[T] {
 			hPrime = MaxHeap(h.compare, h.minOrMaxValue)
 		}
 	}
-
 	newNode := NewNode(v)
 	hPrime.head = newNode
 	hPrime.minOrMaxRoot = hPrime.head
 	hPrime.size++
 
 	h.head, h.size, h.minOrMaxRoot, h.minOrMaxValue = union(h, hPrime)
-
-	return newNode
 }
 
 func (h *BinomialHeap[T]) updateValue(n *BinomialNode[T], v T) error {
@@ -296,10 +313,7 @@ func (h *BinomialHeap[T]) updateValue(n *BinomialNode[T], v T) error {
 	return nil
 }
 
-// Removes the min/max root node
-// TODO: Find workaround for when min/max root node is removed but then accessed
-// from a previous assignment
-func (h *BinomialHeap[T]) Remove(n *BinomialNode[T]) {
+func (h *BinomialHeap[T]) RemoveNode(n *BinomialNode[T]) {
 	err := h.updateValue(n, h.minOrMaxValue)
 	if err != nil {
 		fmt.Println(err)
@@ -307,6 +321,13 @@ func (h *BinomialHeap[T]) Remove(n *BinomialNode[T]) {
 	h.Extract()
 	h.minOrMaxRoot = n
 	h.minOrMaxValue = n.value
+}
+
+func (h *BinomialHeap[T]) Remove(v T) {
+	n := h.Find(v)
+	if n != nil {
+		h.RemoveNode(n)
+	}
 }
 
 /* -------------------------------------------------------------------------- */
@@ -483,8 +504,8 @@ func union[T any](h1, h2 *BinomialHeap[T]) (head *BinomialNode[T],
 /*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-func getMinOrMaxValue[T any](minHeap bool, comp comparator.Comparator[T], x, y T) T {
-	result := comp(x, y)
+func getMinOrMaxValue[T any](minHeap bool, compare comparator.Comparator[T], x, y T) T {
+	result := compare(x, y)
 	if minHeap && result == comparator.Lesser || !minHeap && result == comparator.Greater {
 		return x
 	} else {
@@ -534,5 +555,7 @@ func Demo() {
 	h.Insert(123)
 	h.Insert(190)
 	h.Insert(79)
+	fmt.Println(h)
+	h.Remove(79)
 	fmt.Println(h)
 }

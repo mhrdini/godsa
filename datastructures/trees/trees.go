@@ -8,6 +8,8 @@ import (
 type ITree[T any] interface {
 	containers.Container[T]
 	Root() INode[T]
+	Insert(v T)
+	Remove(v T)
 }
 
 type INode[T any] interface {
