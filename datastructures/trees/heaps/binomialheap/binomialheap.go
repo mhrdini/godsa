@@ -238,7 +238,7 @@ func (h *BinomialHeap[T]) Extract() *BinomialNode[T] {
 /*                             INSERTION/DELETION                             */
 /* -------------------------------------------------------------------------- */
 
-func (h *BinomialHeap[T]) Insert(v T) {
+func (h *BinomialHeap[T]) Insert(v T) *BinomialNode[T] {
 
 	var hPrime *BinomialHeap[T]
 	var vComparedToSmallestValue = h.compare(v, h.minOrMaxValue)
@@ -258,14 +258,55 @@ func (h *BinomialHeap[T]) Insert(v T) {
 		}
 	}
 
-	hPrime.head = NewNode(v)
+	newNode := NewNode(v)
+	hPrime.head = newNode
 	hPrime.minOrMaxRoot = hPrime.head
 	hPrime.size++
 
 	h.head, h.size, h.minOrMaxRoot, h.minOrMaxValue = union(h, hPrime)
+
+	return newNode
 }
 
-func (h *BinomialHeap[T]) Remove(v T) {
+func (h *BinomialHeap[T]) updateValue(n *BinomialNode[T], v T) error {
+	if n == nil {
+		return fmt.Errorf("error: node n is nil")
+	}
+	if result := h.compare(v, n.value); h.minHeap && result == comparator.Greater {
+		return fmt.Errorf("error: new value is greater than current value")
+	} else if !h.minHeap && result == comparator.Lesser {
+		return fmt.Errorf("error: new value is lesser than current value")
+	}
+	n.value = v
+	y := n
+	z := y.parent
+	for result := h.compare(y.value, z.value); z != nil && h.minHeap && result == comparator.Lesser || !h.minHeap && result == comparator.Greater; result = h.compare(y.value, z.value) {
+		err := exchange(y, z)
+		if err != nil {
+			return err
+		}
+		if h.minOrMaxRoot == z {
+			h.minOrMaxRoot = y
+		} else if h.minOrMaxRoot == y {
+			h.minOrMaxRoot = z
+		}
+		y = z
+		z = y.parent
+	}
+	return nil
+}
+
+// Removes the min/max root node
+// TODO: Find workaround for when min/max root node is removed but then accessed
+// from a previous assignment
+func (h *BinomialHeap[T]) Remove(n *BinomialNode[T]) {
+	err := h.updateValue(n, h.minOrMaxValue)
+	if err != nil {
+		fmt.Println(err)
+	}
+	h.Extract()
+	h.minOrMaxRoot = n
+	h.minOrMaxValue = n.value
 }
 
 /* -------------------------------------------------------------------------- */
@@ -471,6 +512,16 @@ func updateMinOrMax[T any](h *BinomialHeap[T], n *BinomialNode[T]) (updated bool
 		}
 	}
 	return
+}
+
+func exchange[T any](y, z *BinomialNode[T]) error {
+	if y == nil || z == nil {
+		return fmt.Errorf("error: both nodes have to be non-nil to exchange")
+	}
+	temp := y.value
+	y.value = z.value
+	z.value = temp
+	return nil
 }
 
 func Demo() {
