@@ -1,7 +1,5 @@
 package inwardtraversal
 
-import "fmt"
-
 /**
  * Problem:
  * Given an array of integers sorted in ascending order and a target value,
@@ -10,21 +8,29 @@ import "fmt"
  * If no pair is found, return an empty array.
  */
 
+/**
+ * Solution: O(n)
+ * - Use inward traversal
+ * - If sum is less than target, advance left pointer
+ * - If sum is more than target, advance right pointer
+ */
+
 func PairSumSorted(arr []int, target int) []int {
 	left := 0
 	right := len(arr) - 1
 
-	for sum := arr[left] + arr[right]; sum != target; sum = arr[left] + arr[right] {
-		if sum < target {
+	for sum := arr[left] + arr[right]; left < right; sum = arr[left] + arr[right] {
+		if sum == target {
+			for right > left+1 && arr[left+1] == arr[left] {
+				left++
+			}
+			return []int{left, right}
+		} else if sum < target {
 			left++
 		} else {
 			right--
 		}
 	}
 
-	pair := []int{left, right}
-
-	fmt.Println(pair)
-
-	return pair
+	return []int{}
 }
