@@ -27,10 +27,7 @@ func LargestContainer(heights []int) int {
 	left, right := 0, len(heights)-1 // index
 	largest := 0
 	for left < right {
-		min_height := heights[left]
-		if heights[right] < min_height {
-			min_height = heights[right]
-		}
+		min_height := min(heights[right], heights[left])
 		current := min_height * (right - left)
 		if current > largest {
 			largest = current

@@ -9,7 +9,7 @@ import (
  * Given an array of integers, return all triplets (a, b, c] such that
  * a + b + c = 0. The solution must not contain duplicate triplets
  * (e.g., [1, 2, 3] and [2, 3, 1] are considered duplicate triplets),
- * If no such triptets are found, return an empty array.
+ * If no such triplets are found, return an empty array.
  *
  * Each triplet can be arranged in any order, and the output can be returned
  * in any order.
@@ -29,23 +29,23 @@ import (
  *				number in the list
  */
 
-func TripleSum(arr []int) [][]int {
-	sort.Ints(arr)
-	n := len(arr)
+func TripleSum(nums []int) [][]int {
+	sort.Ints(nums)
+	n := len(nums)
 
 	var result [][]int
 
 	for i := 0; i < n-2; i++ {
-		if arr[i] > 0 {
+		if nums[i] > 0 {
 			break
 		}
-		if i > 0 && arr[i] == arr[i-1] {
+		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
-		pair := PairSumSorted(arr[i+1:], -arr[i])
+		pair := PairSumSorted(nums[i+1:], -nums[i])
 		if len(pair) == 2 {
 			index_offset := i + 1
-			triplet := []int{arr[i], arr[index_offset+pair[0]], arr[index_offset+pair[1]]}
+			triplet := []int{nums[i], nums[index_offset+pair[0]], nums[index_offset+pair[1]]}
 			result = append(result, triplet)
 		}
 	}
