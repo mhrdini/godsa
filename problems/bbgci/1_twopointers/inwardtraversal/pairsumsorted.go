@@ -16,8 +16,7 @@ package inwardtraversal
  */
 
 func PairSumSorted(arr []int, target int) []int {
-	left := 0
-	right := len(arr) - 1
+	left, right := 0, len(arr)-1
 
 	for sum := arr[left] + arr[right]; left < right; sum = arr[left] + arr[right] {
 		if sum == target {
