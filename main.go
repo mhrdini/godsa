@@ -1,7 +1,9 @@
 package main
 
-import "github.com/mhrdini/godsa/datastructures/trees/heaps/binomialheap"
+import (
+	"github.com/mhrdini/godsa/problems/bbgci/1_twopointers/inwardtraversal/pairsumsorted"
+)
 
 func main() {
-	binomialheap.Demo()
+	pairsumsorted.PairSumSorted()
 }

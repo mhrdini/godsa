@@ -69,12 +69,12 @@ type BinomialNode[T any] struct {
 	sibling *BinomialNode[T]
 }
 
-func MaxHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
+func MinHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
 	h := &BinomialHeap[T]{
 		head:          nil,
 		minOrMaxRoot:  nil,
 		size:          0,
-		minHeap:       false,
+		minHeap:       true,
 		minOrMaxValue: minOrMaxValue,
 		compare:       compare,
 	}
@@ -82,12 +82,12 @@ func MaxHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *Binomial
 	return h
 }
 
-func MinHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
+func MaxHeap[T any](compare comparator.Comparator[T], minOrMaxValue T) *BinomialHeap[T] {
 	h := &BinomialHeap[T]{
 		head:          nil,
 		minOrMaxRoot:  nil,
 		size:          0,
-		minHeap:       true,
+		minHeap:       false,
 		minOrMaxValue: minOrMaxValue,
 		compare:       compare,
 	}
@@ -257,7 +257,7 @@ func (n *BinomialNode[T]) find(minHeap bool, compare comparator.Comparator[T], v
 }
 
 /* -------------------------------------------------------------------------- */
-/*                             INSERTION/DELETION                             */
+/*                              INSERTION/REMOVAL                             */
 /* -------------------------------------------------------------------------- */
 
 func (h *BinomialHeap[T]) Insert(v T) {
