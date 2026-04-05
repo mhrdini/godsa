@@ -1,5 +1,9 @@
 # Two Pointers
 
+## Idea
+
+Use two pointers that each represents a location of a value in a data structure.
+
 ## Motivations
 
 - To compare values
