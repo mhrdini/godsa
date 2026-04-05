@@ -11,8 +11,7 @@ package hashmaps
  */
 
 /**
- * Solution -> O(n)
- *	- two passes: O(n + n) = O(n)
+ * Solution 1 -> O(n) with two passes
  *	- first construct a map of each value to its index
  *	- then for each value:
  *		- calculate its complement, i.e. the other value needed to get the sum
@@ -20,7 +19,12 @@ package hashmaps
  *			return the index of the value and the index of the complement
  */
 
-func PairSumUnsorted(nums []int, target int) []int {
+/**
+ * Solution 2 -> O(n) with one pass
+ *	- similar, but populate as you go
+ */
+
+func PairSumUnsortedTwoPass(nums []int, target int) []int {
 
 	complement_idx := map[int]int{}
 
@@ -33,6 +37,20 @@ func PairSumUnsorted(nums []int, target int) []int {
 		idx, ok := complement_idx[complement]
 		if ok {
 			return []int{i, idx}
+		}
+	}
+	return []int{}
+}
+
+func PairSumUnsorted(nums []int, target int) []int {
+	complement_idx := map[int]int{}
+
+	for i, v := range nums {
+		complement_idx[v] = i
+		complement := target - v
+		idx, ok := complement_idx[complement]
+		if ok && i != idx {
+			return []int{idx, i}
 		}
 	}
 	return []int{}
