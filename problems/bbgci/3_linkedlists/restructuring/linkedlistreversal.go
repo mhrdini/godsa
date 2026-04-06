@@ -9,6 +9,10 @@ import (
  * Reverse a singly linked list.
  */
 
+/**
+ * Solution ->
+ */
+
 func LinkedListReversalIterative[T any](l *singlylinkedlist.List[T]) {
 	prev_head := l.Head()
 	var prev, curr *singlylinkedlist.Node[T] = nil, l.Head()

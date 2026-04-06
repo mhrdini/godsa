@@ -15,12 +15,12 @@ package inwardtraversal
  * - If sum is more than target, advance right pointer
  */
 
-func PairSumSorted(nums []int, target int) []int {
-	left, right := 0, len(nums)-1
+func PairSumSorted(vs []int, target int) []int {
+	left, right := 0, len(vs)-1
 
-	for sum := nums[left] + nums[right]; left < right; sum = nums[left] + nums[right] {
+	for sum := vs[left] + vs[right]; left < right; sum = vs[left] + vs[right] {
 		if sum == target {
-			for right > left+1 && nums[left+1] == nums[left] {
+			for right > left+1 && vs[left+1] == vs[left] {
 				left++
 			}
 			return []int{left, right}

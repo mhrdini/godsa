@@ -6,11 +6,11 @@ package unidirectionaltraversal
  * to the end while maintaining the relative order of non-zero elements.
  */
 
-func ShiftZerosToEnd(nums []int) {
+func ShiftZerosToEnd(vs []int) {
 	left := 0
-	for right := range nums {
-		if nums[right] != 0 {
-			nums[left], nums[right] = nums[right], nums[left]
+	for right := range vs {
+		if vs[right] != 0 {
+			vs[left], vs[right] = vs[right], vs[left]
 			left++
 		}
 	}

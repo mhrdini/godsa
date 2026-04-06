@@ -24,15 +24,15 @@ package hashmaps
  *	- similar, but populate as you go
  */
 
-func PairSumUnsortedTwoPass(nums []int, target int) []int {
+func PairSumUnsortedTwoPass(vs []int, target int) []int {
 
 	complement_idx := map[int]int{}
 
-	for i, v := range nums {
+	for i, v := range vs {
 		complement_idx[v] = i
 	}
 
-	for i, v := range nums {
+	for i, v := range vs {
 		complement := target - v
 		idx, ok := complement_idx[complement]
 		if ok {
@@ -42,10 +42,10 @@ func PairSumUnsortedTwoPass(nums []int, target int) []int {
 	return []int{}
 }
 
-func PairSumUnsorted(nums []int, target int) []int {
+func PairSumUnsorted(vs []int, target int) []int {
 	complement_idx := map[int]int{}
 
-	for i, v := range nums {
+	for i, v := range vs {
 		complement_idx[v] = i
 		complement := target - v
 		idx, ok := complement_idx[complement]

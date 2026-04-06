@@ -29,23 +29,23 @@ import (
  *				number in the list
  */
 
-func TripleSum(nums []int) [][]int {
-	sort.Ints(nums)
-	n := len(nums)
+func TripleSum(vs []int) [][]int {
+	sort.Ints(vs)
+	n := len(vs)
 
 	var result [][]int
 
 	for i := 0; i < n-2; i++ {
-		if nums[i] > 0 {
+		if vs[i] > 0 {
 			break
 		}
-		if i > 0 && nums[i] == nums[i-1] {
+		if i > 0 && vs[i] == vs[i-1] {
 			continue
 		}
-		pair := PairSumSorted(nums[i+1:], -nums[i])
+		pair := PairSumSorted(vs[i+1:], -vs[i])
 		if len(pair) == 2 {
 			index_offset := i + 1
-			triplet := []int{nums[i], nums[index_offset+pair[0]], nums[index_offset+pair[1]]}
+			triplet := []int{vs[i], vs[index_offset+pair[0]], vs[index_offset+pair[1]]}
 			result = append(result, triplet)
 		}
 	}
