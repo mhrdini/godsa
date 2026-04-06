@@ -27,8 +27,27 @@ func (n *Node[T]) Next() *Node[T] {
 	return n.next
 }
 
+func (n *Node[T]) SetNext(next *Node[T]) {
+	n.next = next
+}
+
+func (n *Node[T]) SetValue(v T) {
+	n.value = v
+}
+
 func (n *Node[T]) Empty() bool {
 	return n == nil
+}
+
+func (n *Node[T]) String() string {
+	if n == nil {
+		return "nil"
+	}
+	next := "nil"
+	if n.next != nil {
+		next = fmt.Sprintf("%v", n.next.value)
+	}
+	return fmt.Sprintf("%v -> %v", n.value, next)
 }
 
 // New receives a variadic input of values whose type are T.
@@ -51,6 +70,26 @@ func (l *List[T]) Size() int {
 // Empty checks if the List has no nodes.
 func (l *List[T]) Empty() bool {
 	return l.size == 0 && l.head == nil && l.tail == nil
+}
+
+// Head returns the head node of the list.
+func (l *List[T]) Head() *Node[T] {
+	return l.head
+}
+
+// Tail returns the head node of the list.
+func (l *List[T]) Tail() *Node[T] {
+	return l.tail
+}
+
+// SetHead updates the node at head.
+func (l *List[T]) SetHead(n *Node[T]) {
+	l.head = n
+}
+
+// SetTail updates the node at tail.
+func (l *List[T]) SetTail(n *Node[T]) {
+	l.tail = n
 }
 
 // Values returns a slice of the values carried by all the nodes within the List,

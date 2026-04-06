@@ -11,14 +11,49 @@ const doublyLinkedList = "DoublyLinkedList"
 
 type List[T any] struct {
 	size int
-	head *node[T]
-	tail *node[T]
+	head *Node[T]
+	tail *Node[T]
 }
 
-type node[T any] struct {
+type Node[T any] struct {
 	value T
-	prev  *node[T]
-	next  *node[T]
+	prev  *Node[T]
+	next  *Node[T]
+}
+
+func (n *Node[T]) Value() T {
+	return n.value
+}
+
+func (n *Node[T]) Prev() *Node[T] {
+	return n.prev
+}
+
+func (n *Node[T]) Next() *Node[T] {
+	return n.next
+}
+
+func (n *Node[T]) SetValue(v T) {
+	n.value = v
+}
+
+func (n *Node[T]) SetPrev(prev *Node[T]) {
+	n.prev = prev
+}
+
+func (n *Node[T]) SetNext(next *Node[T]) {
+	n.next = next
+}
+
+func (n *Node[T]) Empty() bool {
+	return n == nil
+}
+
+func (n *Node[T]) String() string {
+	if n == nil {
+		return "nil"
+	}
+	return fmt.Sprintf("%v", n.value)
 }
 
 // New receives a variadic input of values whose type are T.
@@ -41,6 +76,26 @@ func (l *List[T]) Size() int {
 // Empty checks if the List has no nodes.
 func (l *List[T]) Empty() bool {
 	return l.size == 0 && l.head == nil && l.tail == nil
+}
+
+// Head returns the head node of the list.
+func (l *List[T]) Head() *Node[T] {
+	return l.head
+}
+
+// Tail returns the head node of the list.
+func (l *List[T]) Tail() *Node[T] {
+	return l.tail
+}
+
+// SetHead updates the node at head.
+func (l *List[T]) SetHead(n *Node[T]) {
+	l.head = n
+}
+
+// SetTail updates the node at tail.
+func (l *List[T]) SetTail(n *Node[T]) {
+	l.tail = n
 }
 
 // Values returns a slice of the values carried by all the nodes within the List,
@@ -73,14 +128,14 @@ func (l *List[T]) Sort(comp comparator.Comparator[T]) {
 	l.Add(vs...)
 }
 
-// Add creates and inserts a new node at the tail end of the List, for every T value received as input.
+// Add creates and inserts a new Node at the tail end of the List, for every T value received as input.
 func (l *List[T]) Add(vs ...T) bool {
 	if len(vs) == 0 {
 		return false
 	}
 
 	for _, v := range vs {
-		newNode := &node[T]{
+		newNode := &Node[T]{
 			value: v,
 			prev:  nil,
 			next:  nil,
@@ -110,9 +165,9 @@ func (l *List[T]) InsertAt(i int, vs ...T) bool {
 		return l.Add(vs...)
 	}
 
-	var start, end, prev *node[T]
+	var start, end, prev *Node[T]
 	for idx, v := range vs {
-		newNode := &node[T]{
+		newNode := &Node[T]{
 			value: v,
 			prev:  prev,
 			next:  nil,
@@ -140,7 +195,7 @@ func (l *List[T]) InsertAt(i int, vs ...T) bool {
 			l.head = start
 		}
 	default:
-		var curr *node[T]
+		var curr *Node[T]
 		if i <= l.size/2 {
 			curr = l.head
 			for pos := 0; pos < i-1; curr, pos = curr.next, pos+1 {
@@ -172,9 +227,9 @@ func (l *List[T]) Append(v ...T) bool {
 	return l.Add(v...)
 }
 
-// Remove removes a node at position n, with zero-based indexing.
+// Remove removes a Node at position n, with zero-based indexing.
 // n must be between 0 and l.size - 1, inclusive.
-// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// Returns the value of the removed Node (if any), and a boolean value determining whether a value
 // was removed or not.
 func (l *List[T]) Remove(i int) (T, bool) {
 	var value T
@@ -193,7 +248,7 @@ func (l *List[T]) Remove(i int) (T, bool) {
 			l.head = l.head.next
 		}
 	default:
-		var curr *node[T]
+		var curr *Node[T]
 		if i <= l.size/2 {
 			curr = l.head
 			for pos := 0; pos < i; curr, pos = curr.next, pos+1 {
@@ -216,21 +271,21 @@ func (l *List[T]) Remove(i int) (T, bool) {
 	return value, true
 }
 
-// RemoveFront removes a node at the head position, using the Remove function.
-// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// RemoveFront removes a Node at the head position, using the Remove function.
+// Returns the value of the removed Node (if any), and a boolean value determining whether a value
 // was removed or not.
 func (l *List[T]) RemoveFront() (T, bool) {
 	return l.Remove(0)
 }
 
-// RemoveBack removes a node at the tail position, using the Remove function.
-// Returns the value of the removed node (if any), and a boolean value determining whether a value
+// RemoveBack removes a Node at the tail position, using the Remove function.
+// Returns the value of the removed Node (if any), and a boolean value determining whether a value
 // was removed or not.
 func (l *List[T]) RemoveBack() (T, bool) {
 	return l.Remove(l.size - 1)
 }
 
-// Get attempts to retrieve the value contained by the node at position i.
+// Get attempts to retrieve the value contained by the Node at position i.
 // Returns the retrieved value (if any), and a boolean value determining whether a value was
 // retrieved or not.
 func (l *List[T]) Get(i int) (T, bool) {
@@ -248,7 +303,7 @@ func (l *List[T]) Get(i int) (T, bool) {
 	case l.size:
 		return value, false
 	default:
-		var curr *node[T]
+		var curr *Node[T]
 		if i <= l.size/2 {
 			curr = l.head
 			for pos := 0; pos < i; curr, pos = curr.next, pos+1 {
@@ -262,8 +317,8 @@ func (l *List[T]) Get(i int) (T, bool) {
 	}
 }
 
-// Set updates an existing node at position i to hold the value v.
-// Returns a boolean value determining whether a node was updated or not.
+// Set updates an existing Node at position i to hold the value v.
+// Returns a boolean value determining whether a Node was updated or not.
 func (l *List[T]) Set(i int, v T) bool {
 	if !l.withinRange(i) {
 		return false
@@ -273,7 +328,7 @@ func (l *List[T]) Set(i int, v T) bool {
 	case 0, i:
 		return false
 	default:
-		var curr *node[T]
+		var curr *Node[T]
 		if i <= l.size/2 {
 			curr = l.head
 			for pos := 0; pos < i; curr, pos = curr.next, pos+1 {
