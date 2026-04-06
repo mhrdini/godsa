@@ -16,11 +16,14 @@ package hashsets
  */
 
 /**
- * Solution -> O(1) since grid size is 9x9, but arbitrary board size O(n^2)
+ * Solution:
  *	- create a set for every row, column, and sub-grid
  *	- populate as you encounter values, but check first if it exists in the
  *		appropriate row, column, subgrid set
  *	- if it does, then it is a repeated number and therefore is an invalid board
+ *
+ * Time: O(1) for 9x9 size, O(n^2) for arbitrary board size
+ * Space: O(n^2)
  */
 
 var sudoku_grid_len int = 9

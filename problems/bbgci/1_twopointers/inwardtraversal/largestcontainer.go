@@ -12,7 +12,7 @@ package inwardtraversal
  */
 
 /**
- * Solution -> O(n)
+ * Solution:
  * - Pointers start at opposite ends
  * - Use pointers to calculate the area at the current pointers:
  *		- Height = Min height between the two
@@ -21,6 +21,9 @@ package inwardtraversal
  * - If minimum height is:
  *		- Left pointer -> Advance left
  *		- Right pointer -> Advance right
+ *
+ * Time: O(n)
+ * Space: O(1)
  */
 
 func LargestContainer(heights []int) int {

@@ -16,7 +16,7 @@ import (
  */
 
 /**
- * Solution: O(n log n + n^2) = O(n^2)
+ * Solution
  * - For finding the triplet
  * 		- Sort array -> O(n log n)
  *		- Find sum -> O(n^2)
@@ -27,9 +27,12 @@ import (
  * - For avoiding duplicates
  * 		- If pair is not found for the fixed number, advance it until it is a different
  *				number in the list
+ *
+ * Time: O(n log n + n^2) = O(n^2)
+ * Space: O(log n) from Go's sort.Ints() recursive call stacks
  */
 
-func TripleSum(vs []int) [][]int {
+func TripletSum(vs []int) [][]int {
 	sort.Ints(vs)
 	n := len(vs)
 

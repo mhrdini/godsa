@@ -9,16 +9,26 @@ import "slices"
  */
 
 /**
- * Solution 1: O(m * n)
+ * Solution 1:
  *	- Use auxiliary hash sets to keep track of rows and cols with 0s
  *	- 1st pass = Populate sets
  *	- 2nd pass = Use the sets to zero the values on rows and cols with 0s
+ *
+ * Time: O(m * n) where m = # of rows, n = # of cols
+ * Space: O(m + n)
  */
 
 /**
- * Solution 2: O(m * n)
+ * Solution 2:
  *	- Use the matrix itself, specifically the first row and first
  *		column to keep track the columns and rows with 0s respectively.
+ *	- O(m) to check first row for zeros
+ *	- O(n) to check first column for zeros
+ *  - O(2 * m * n) = O(m * n) to check through matrix for zeros and set values
+ *		where either or both of its row and column has zero
+ *
+ * Time: O(m) + O(n) + O(m * n) = O(m * n) where m = # of rows, n = # of cols
+ * Space: O(1)
  */
 
 func ZeroStripingWithAuxiliary(matrix [][]int) {

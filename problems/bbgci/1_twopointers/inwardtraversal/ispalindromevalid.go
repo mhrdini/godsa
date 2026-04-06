@@ -18,10 +18,13 @@ import (
  */
 
 /**
- * Solution: O(n)
+ * Solution:
  * - Inward traversal skipping over non-alphanum characters
  * - Empty string = true, Single character = true
  * - Return false at first sign where left != right
+ *
+ * Time: O(n)
+ * Space: O(1)
  */
 
 func IsPalindromeValid(s string) bool {

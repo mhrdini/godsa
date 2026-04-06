@@ -9,10 +9,13 @@ package inwardtraversal
  */
 
 /**
- * Solution: O(n)
+ * Solution:
  * - Use inward traversal
  * - If sum is less than target, advance left pointer
  * - If sum is more than target, advance right pointer
+ *
+ * Time: O(n)
+ * Space: O(1)
  */
 
 func PairSumSorted(vs []int, target int) []int {

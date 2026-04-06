@@ -13,23 +13,26 @@ package hashsets
  *		- i.e. for a current number v, no v-1 exists in the list
  *	- keep incrementing to get the chain length starting from that number,
  *		tracking the longest chain
+ *
+ * Time: O(n + n) = O(n)
+ * Space: O(n)
  */
 
 func LongestChainOfConsecutiveNumbers(vs []int) int {
-	set := make(map[int]struct{})
+	existing := make(map[int]struct{})
 	longest_chain := 0
 	for _, v := range vs {
-		set[v] = struct{}{}
+		existing[v] = struct{}{}
 	}
 
 	for _, v := range vs {
-		if _, ok := set[v-1]; ok {
+		if _, ok := existing[v-1]; ok {
 			curr := v
 			curr_chain := 1
-			for _, ok := set[curr]; ok; {
+			for _, ok := existing[curr]; ok; {
 				curr_chain++
 				curr++
-				_, ok = set[curr]
+				_, ok = existing[curr]
 			}
 			longest_chain = max(longest_chain, curr_chain)
 		}

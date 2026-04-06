@@ -11,17 +11,25 @@ package hashmaps
  */
 
 /**
- * Solution 1 -> O(n) with two passes
+ * Solution 1:
+ *  - two passes
  *	- first construct a map of each value to its index
  *	- then for each value:
  *		- calculate its complement, i.e. the other value needed to get the sum
  *		- if the complement exists in the map i.e. in the array, then
  *			return the index of the value and the index of the complement
+ *
+ * Time: O(n)
+ * Space: O(1)
  */
 
 /**
- * Solution 2 -> O(n) with one pass
+ * Solution 2:
+ *  - one pass
  *	- similar, but populate as you go
+ *
+ * Time: O(n)
+ * Space: O(1)
  */
 
 func PairSumUnsortedTwoPass(vs []int, target int) []int {
