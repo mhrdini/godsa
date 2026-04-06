@@ -52,16 +52,16 @@ func LinkedListReversalIterative[T any](l *singlylinkedlist.List[T]) {
 
 func LinkedListReversalRecursive[T any](l *singlylinkedlist.List[T]) {
 	prev_head := l.Head()
-	new_head := linkedListReversalRecursiveHelper(prev_head)
+	new_head := LinkedListReversalRecursiveHelper(prev_head)
 	l.SetHead(new_head)
 	l.SetTail(prev_head)
 }
 
-func linkedListReversalRecursiveHelper[T any](head *singlylinkedlist.Node[T]) *singlylinkedlist.Node[T] {
+func LinkedListReversalRecursiveHelper[T any](head *singlylinkedlist.Node[T]) *singlylinkedlist.Node[T] {
 	if head == nil || head.Next() == nil {
 		return head
 	}
-	new_head := linkedListReversalRecursiveHelper(head.Next())
+	new_head := LinkedListReversalRecursiveHelper(head.Next())
 	head.Next().SetNext(head)
 	head.SetNext(nil)
 	return new_head
