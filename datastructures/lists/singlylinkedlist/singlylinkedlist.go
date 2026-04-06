@@ -67,6 +67,10 @@ func (l *List[T]) Size() int {
 	return l.size
 }
 
+func (l *List[T]) SetSize(s int) {
+	l.size = s
+}
+
 // Empty checks if the List has no nodes.
 func (l *List[T]) Empty() bool {
 	return l.size == 0 && l.head == nil && l.tail == nil

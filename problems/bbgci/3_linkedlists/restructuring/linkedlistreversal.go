@@ -7,9 +7,6 @@ import (
 /**
  * Problem:
  * Reverse a singly linked list.
- *
- * Constraint:
- *	- List is only accessible via head node.
  */
 
 func LinkedListReversalIterative[T any](l *singlylinkedlist.List[T]) {
