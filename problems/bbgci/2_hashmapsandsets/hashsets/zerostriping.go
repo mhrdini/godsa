@@ -9,14 +9,14 @@ import "slices"
  */
 
 /**
- * Solution 1: O(m + n)
+ * Solution 1: O(m * n)
  *	- Use auxiliary hash sets to keep track of rows and cols with 0s
  *	- 1st pass = Populate sets
  *	- 2nd pass = Use the sets to zero the values on rows and cols with 0s
  */
 
 /**
- * Solution 2: O(1)
+ * Solution 2: O(m * n)
  *	- Use the matrix itself, specifically the first row and first
  *		column to keep track the columns and rows with 0s respectively.
  */
