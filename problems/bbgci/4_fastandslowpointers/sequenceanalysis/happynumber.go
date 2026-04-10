@@ -19,6 +19,8 @@ package sequenceanalysis
 /**
  * Solution:
  *	- Same as a linked list cycle detection problem
+ *	- A cycle happens when fast and slow becomes the same number
+ *	- On a happy number, fast will converge to 1
  *
  * Time: O(log n)
  * Space: O(1)
