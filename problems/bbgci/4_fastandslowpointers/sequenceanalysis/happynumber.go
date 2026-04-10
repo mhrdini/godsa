@@ -20,7 +20,7 @@ package sequenceanalysis
  * Solution:
  *	- Same as a linked list cycle detection problem
  *
- * Time: O(n) where n = length of cycle
+ * Time: O(log n)
  * Space: O(1)
  */
 
