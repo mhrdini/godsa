@@ -39,6 +39,7 @@ type LRUCache struct {
 	size     int
 	head     *LRUNode
 	tail     *LRUNode
+	nodes    map[int]*LRUNode // key -> node, ref to node
 }
 
 type LRUNode struct {
@@ -54,34 +55,35 @@ func Constructor(capacity int) *LRUCache {
 		size:     0,
 		head:     nil,
 		tail:     nil,
+		nodes:    make(map[int]*LRUNode, 0),
 	}
 	return lc
 }
 
 func (lc *LRUCache) get(key int) int {
-	for curr := lc.head; curr != nil; curr = curr.next {
-		if curr.key == key {
-			prev_head := lc.head
-			curr_prev := curr.prev
-			curr_next := curr.next
-			if curr.prev != nil {
-				curr.prev.next = prev_head
-			}
-			if prev_head.next != nil {
-				curr.next = prev_head.next
-			}
-			curr.prev = prev_head.prev
-			curr.next = prev_head.next
-			prev_head.next = curr_next
-			prev_head.prev = curr_prev
-			return curr.value
+	if n, ok := lc.nodes[key]; ok {
+		prev_head := lc.head
+		n_prev := n.prev
+		n_next := n.next
+		if n.prev != nil {
+			n.prev.next = prev_head
 		}
+		if prev_head.next != nil {
+			n.next = prev_head.next
+		}
+		n.prev = prev_head.prev
+		n.next = prev_head.next
+		prev_head.next = n_prev
+		prev_head.prev = n_next
+		return n.value
 	}
+
 	return -1
 }
 
 func (lc *LRUCache) put(key, value int) {
 	if lc.size == lc.capacity {
+		delete(lc.nodes, lc.tail.key)
 		lc.tail.prev.next = nil
 		lc.tail = lc.tail.prev
 	}
@@ -98,6 +100,7 @@ func (lc *LRUCache) put(key, value int) {
 		lc.tail = lc.head
 	}
 	lc.head = n
+	lc.nodes[key] = n
 	lc.size++
 }
 
