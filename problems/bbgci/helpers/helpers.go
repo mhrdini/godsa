@@ -1,5 +1,7 @@
 package helpers
 
+import "golang.org/x/exp/constraints"
+
 func GetZeroBasedLetterIndex(c rune) int {
 	return int(c - 'a')
 }
@@ -29,4 +31,14 @@ func HasAllUnique(s string) bool {
 	}
 
 	return true
+}
+
+func Max[T constraints.Ordered](vs ...T) T {
+	maxVal := vs[0]
+	for _, v := range vs {
+		if v > maxVal {
+			maxVal = v
+		}
+	}
+	return maxVal
 }
