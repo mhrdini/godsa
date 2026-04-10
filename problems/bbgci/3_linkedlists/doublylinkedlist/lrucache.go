@@ -29,9 +29,12 @@ import "fmt"
  * Solution:
  *  - FIFO-ish, but performing get(key int) will move the existing item with
  *		that key to the most recently used end (head)
- *  - Performing put(key, value int) while  at full capacity will remove the
+ *  - Performing put(key, value int) while at full capacity will remove the
  *    item at the least recently used end (tail) and add the item to the most
  *		recently used end (head)
+ *
+ * Time: O(1)
+ * Space: O(c) where c = capacity to store hash map and LRU cache itself
  */
 
 type LRUCache struct {
