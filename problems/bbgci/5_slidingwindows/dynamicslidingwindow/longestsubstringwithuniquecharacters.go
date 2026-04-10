@@ -14,6 +14,9 @@ package dynamicslidingwindow
  *			occurrence
  *		- Updates the last seen index of letter at right pointer
  *		- Moves the right pointer to the right by 1 each time
+ *
+ * Time: O(n)
+ * Space: O(m) where m is total # of unique characters encountered
  */
 
 func LongestSubstringWithUniqueCharacters(s string) int {
