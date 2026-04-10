@@ -1,5 +1,7 @@
 package fixedslidingwindow
 
+import "github.com/mhrdini/godsa/problems/bbgci/helpers"
+
 /**
  * Problem:
  * Given two strings, s and t, both consisting of lowercase English letters,
@@ -28,7 +30,7 @@ func SubstringAnagrams(s, t string) int {
 	expected_freqs := make([]int, 26)
 
 	for _, c := range t {
-		idx := getZeroBasedLetterIndex(c) // a = 0, z = 25
+		idx := helpers.GetZeroBasedLetterIndex(c) // a = 0, z = 25
 		expected_freqs[idx]++
 	}
 
@@ -36,34 +38,21 @@ func SubstringAnagrams(s, t string) int {
 	left, right := 0, 0
 
 	for right < len(s) {
-		window_freqs[getZeroBasedLetterIndex(rune(s[right]))]++
+		window_freqs[helpers.GetZeroBasedLetterIndex(rune(s[right]))]++
 
 		// anagrams of t will have same length of t, so when the sliding window has
 		// reached that length, check if it is an anagram
 		// update count if it is, in any case slide the window, and update
 		// the window freqs
 		if right-left+1 == len(t) {
-			if same(window_freqs, expected_freqs) {
+			if helpers.SameIntArray(window_freqs, expected_freqs) {
 				count++
 			}
-			window_freqs[getZeroBasedLetterIndex(rune(s[left]))]--
+			window_freqs[helpers.GetZeroBasedLetterIndex(rune(s[left]))]--
 			left++
 		}
 		right++
 	}
 
 	return count
-}
-
-func getZeroBasedLetterIndex(c rune) int {
-	return int(c - 'a')
-}
-
-func same(a, b []int) bool {
-	for i := 0; i < 26; i++ {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
 }
